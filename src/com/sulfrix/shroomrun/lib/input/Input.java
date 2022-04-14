@@ -1,4 +1,4 @@
-package com.sulfrix.shroomrun.lib;
+package com.sulfrix.shroomrun.lib.input;
 
 import com.sulfrix.shroomrun.ShroomRun;
 import processing.core.PApplet;
@@ -13,7 +13,26 @@ public class Input {
     public int pmouseY = 0;
     public boolean mousePressed = false;
 
+    public HashMap<String, InputAction> actions = new HashMap<>();
+
     public PApplet owner;
+
+    public Input() {
+        addAction(new InputAction("jump", () -> KeyPressed(32)).addBinding(() -> mousePressed));
+    }
+
+    public boolean getActionPressed(String name) {
+        return getAction(name).isPressed();
+    }
+
+    public InputAction getAction(String name) {
+        return actions.get(name);
+    }
+
+    public InputAction addAction(InputAction action) {
+        actions.put(action.name, action);
+        return action;
+    }
 
     public HashMap<Integer, Boolean> keys = new HashMap<>();
 

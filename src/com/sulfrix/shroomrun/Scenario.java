@@ -1,7 +1,7 @@
 package com.sulfrix.shroomrun;
 
 
-import com.sulfrix.shroomrun.lib.Input;
+import com.sulfrix.shroomrun.lib.input.Input;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 

@@ -1,13 +1,12 @@
 package com.sulfrix.shroomrun;
 
 import com.sulfrix.shroomrun.entities.Camera;
-import com.sulfrix.shroomrun.lib.*;
 import com.sulfrix.shroomrun.lib.GlobalManagers.*;
+import com.sulfrix.shroomrun.lib.input.Input;
 import com.sulfrix.shroomrun.scenarios.MainScenario;
 import processing.core.*;
 import processing.event.KeyEvent;
 import processing.opengl.PGraphicsOpenGL;
-import processing.opengl.PSurfaceJOGL;
 //import processing.sound.SoundFile;
 
 import java.util.ArrayList;

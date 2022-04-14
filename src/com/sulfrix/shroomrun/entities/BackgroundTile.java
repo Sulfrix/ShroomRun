@@ -2,10 +2,7 @@ package com.sulfrix.shroomrun.entities;
 
 import com.sulfrix.shroomrun.Entity;
 import com.sulfrix.shroomrun.lib.BoundingBox;
-import com.sulfrix.shroomrun.lib.GlobalManagers.Display;
 import com.sulfrix.shroomrun.lib.GlobalManagers.RNG;
-import com.sulfrix.shroomrun.lib.Input;
-import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PVector;

@@ -58,7 +58,7 @@ public class RunnerPlayer extends PhysicsEntity implements Damageable {
     }
 
     public void JumpLogic(double timescale) {
-        var willJump = world.input.KeyPressed(32);
+        var willJump = world.input.getActionPressed("jump");
         if (collisionSides[2]) {
             jumpTime = 4;
             hasJumped = false;
