@@ -12,6 +12,7 @@ public class RunnerPlayer extends PhysicsEntity implements Damageable {
 
     public float jumpTime;
     public boolean hasJumped = true;
+    public boolean prevJumpInput = false;
     public float health = 100f;
     public DamageTeam team;
 
@@ -22,6 +23,7 @@ public class RunnerPlayer extends PhysicsEntity implements Damageable {
         renderingEnabled = true;
         collisionEnabled = true;
         ZPos = 1;
+        gravityMult = 1.5;
         sprite = new AnimatedSprite(30, 30, "shroom.png");
         sprite.addSequence("running", 0.035f, new int[] {0, 1, 2, 1}, true);
         sprite.addSequence("jump", 0.25f, new int[] {0}, false);
@@ -58,7 +60,7 @@ public class RunnerPlayer extends PhysicsEntity implements Damageable {
     public void JumpLogic(double timescale) {
         var willJump = world.input.KeyPressed(32);
         if (collisionSides[2]) {
-            jumpTime = 10;
+            jumpTime = 4;
             hasJumped = false;
         } else {
             if (!willJump) {
@@ -69,13 +71,21 @@ public class RunnerPlayer extends PhysicsEntity implements Damageable {
             velocity.y = -9;
             jumpTime -= timescale;
             hasJumped = true;
-        } else {
-            if (velocity.y > 0 || (jumpTime <= 0 && hasJumped)) {
-                gravityMult = 1.5;
-            } else {
-                gravityMult = 1;
-            }
         }
+        else if (velocity.y > 2 || !willJump) {
+            gravityMult = 2.2;
+        }
+        else if (velocity.y > -2 && velocity.y < 2 && willJump){
+            gravityMult = 0.5;
+        }
+        else{
+            gravityMult = 0.9;
+        }
+
+        if(!willJump && prevJumpInput && velocity.y < 0){
+            velocity.y *= 0.6;
+        }
+        prevJumpInput = willJump;
     }
 
     @Override
