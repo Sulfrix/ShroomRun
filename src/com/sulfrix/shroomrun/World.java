@@ -22,6 +22,8 @@ public class World {
     public Camera camera;
     public Input input;
 
+    public double time;
+
     public int renderedEnts;
 
     public boolean updateEnabled = true;
@@ -64,6 +66,7 @@ public class World {
 
             DoCameraFocus(timescale);
         }
+        time+=timescale;
     }
 
     public void draw(double timescale, PGraphics g) {
