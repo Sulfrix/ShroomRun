@@ -1,8 +1,7 @@
-package com.sulfrix.shroomrun.lib.input;
+package com.sulfrix.sulfur.lib.input;
 
-import com.sulfrix.shroomrun.ShroomRun;
+import com.sulfrix.shroomrun.ShroomRunOld;
 import processing.core.PApplet;
-import processing.opengl.PSurfaceJOGL;
 
 import java.util.HashMap;
 
@@ -49,11 +48,11 @@ public class Input {
         keys.put(key, true);
         // hard coded keys, fight me.
         if (key == 99) {
-            ShroomRun.debugText = !ShroomRun.debugText;
+            ShroomRunOld.debugText = !ShroomRunOld.debugText;
         }
         if (key == 100) {
-            ShroomRun.framerateGraph.clear();
-            ShroomRun.frameGraph = !ShroomRun.frameGraph;
+            ShroomRunOld.framerateGraph.clear();
+            ShroomRunOld.frameGraph = !ShroomRunOld.frameGraph;
         }
     }
 

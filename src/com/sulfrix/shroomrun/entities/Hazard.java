@@ -1,10 +1,11 @@
 package com.sulfrix.shroomrun.entities;
 
-import com.sulfrix.shroomrun.Entity;
+import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.shroomrun.entities.entityTypes.DamageTeam;
 import com.sulfrix.shroomrun.entities.entityTypes.Damageable;
-import com.sulfrix.shroomrun.lib.BoundingBox;
-import com.sulfrix.shroomrun.lib.GlobalManagers.AssetCache;
+import com.sulfrix.sulfur.entity.PhysicsEntity;
+import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.GlobalManagers.AssetCache;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;

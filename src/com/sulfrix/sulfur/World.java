@@ -1,10 +1,12 @@
-package com.sulfrix.shroomrun;
+package com.sulfrix.sulfur;
 
-import com.sulfrix.shroomrun.entities.Camera;
-import com.sulfrix.shroomrun.lib.BoundingBox;
-import com.sulfrix.shroomrun.lib.GlobalManagers.Display;
-import com.sulfrix.shroomrun.lib.input.Input;
-import com.sulfrix.shroomrun.lib.RenderPosType;
+import com.sulfrix.shroomrun.ShroomRunOld;
+import com.sulfrix.sulfur.entity.Camera;
+import com.sulfrix.sulfur.entity.Entity;
+import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.GlobalManagers.Display;
+import com.sulfrix.sulfur.lib.input.Input;
+import com.sulfrix.sulfur.lib.RenderPosType;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -123,7 +125,7 @@ public class World {
         g.push();
         RenderOffsets(entity, g);
         entity.draw(timescale, g);
-        if (ShroomRun.debugOBB) {
+        if (ShroomRunOld.debugOBB) {
             g.push();
             g.stroke(255);
             g.strokeWeight(1);

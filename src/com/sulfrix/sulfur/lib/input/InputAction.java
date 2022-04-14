@@ -1,7 +1,6 @@
-package com.sulfrix.shroomrun.lib.input;
+package com.sulfrix.sulfur.lib.input;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 public class InputAction {
     public String name;

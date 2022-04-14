@@ -1,12 +1,13 @@
 package com.sulfrix.shroomrun.scenarios;
 
-import com.sulfrix.shroomrun.Entity;
-import com.sulfrix.shroomrun.Scenario;
-import com.sulfrix.shroomrun.ShroomRun;
+import com.sulfrix.sulfur.entity.Entity;
+import com.sulfrix.sulfur.Scenario;
+import com.sulfrix.shroomrun.ShroomRunOld;
 import com.sulfrix.shroomrun.entities.*;
 import com.sulfrix.shroomrun.entities.entityTypes.Damageable;
 import com.sulfrix.shroomrun.entities.ui.HUDEntity;
-import com.sulfrix.shroomrun.lib.GlobalManagers.RNG;
+import com.sulfrix.sulfur.entity.Camera;
+import com.sulfrix.sulfur.lib.GlobalManagers.RNG;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -53,8 +54,8 @@ public class MainScenario extends Scenario {
                 ply.setHealth(0);
             }
             if (ply.getHealth() <= 0) {
-                if (applet instanceof ShroomRun) {
-                    var shrRun = (ShroomRun)applet;
+                if (applet instanceof ShroomRunOld) {
+                    var shrRun = (ShroomRunOld)applet;
                     shrRun.setCurrentScenario(new MainScenario());
                 }
             }

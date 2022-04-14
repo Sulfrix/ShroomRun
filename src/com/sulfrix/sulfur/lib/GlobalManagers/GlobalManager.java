@@ -1,4 +1,4 @@
-package com.sulfrix.shroomrun.lib.GlobalManagers;
+package com.sulfrix.sulfur.lib.GlobalManagers;
 
 import processing.core.PApplet;
 

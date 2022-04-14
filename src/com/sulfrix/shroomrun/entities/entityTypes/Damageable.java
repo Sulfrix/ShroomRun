@@ -1,6 +1,6 @@
 package com.sulfrix.shroomrun.entities.entityTypes;
 
-import com.sulfrix.shroomrun.Entity;
+import com.sulfrix.sulfur.entity.Entity;
 
 public interface Damageable {
     DamageTeam team = DamageTeam.PLAYER;

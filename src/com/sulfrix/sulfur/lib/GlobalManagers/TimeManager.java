@@ -1,4 +1,4 @@
-package com.sulfrix.shroomrun.lib.GlobalManagers;
+package com.sulfrix.sulfur.lib.GlobalManagers;
 
 import processing.core.PApplet;
 
@@ -17,9 +17,6 @@ public abstract class TimeManager extends GlobalManager {
     public static ArrayList<Double> frameTimeList = new ArrayList<>();
     public static double avgFrameTime;
     public static final int fpsAvgSize = 100;
-    public static void init(PApplet ownerApplet) {
-        owner = ownerApplet;
-    }
 
     /**
      * MUST be run after every draw() at the topmost level, or timing WILL break!
