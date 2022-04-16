@@ -13,7 +13,7 @@ import processing.core.PGraphics;
 public abstract class Scenario {
     public World world;
     public Input input;
-    public PApplet applet;
+    public SulfurGame applet;
 
     public boolean updatedOnce;
 

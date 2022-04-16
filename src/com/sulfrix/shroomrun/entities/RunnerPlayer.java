@@ -34,8 +34,8 @@ public class RunnerPlayer extends PhysicsEntity implements Damageable {
     @Override
     public void update(double timescale) {
         MoveForward(timescale);
-        super.update(timescale);
         JumpLogic(timescale);
+        super.update(timescale);
         UpdateSprite(timescale);
     }
 
@@ -74,9 +74,9 @@ public class RunnerPlayer extends PhysicsEntity implements Damageable {
             hasJumped = true;
         }
         else if (velocity.y > 2 || !willJump) {
-            gravityMult = 2.2;
+            gravityMult = 1.7;
         }
-        else if (velocity.y > -2 && velocity.y < 2 && willJump){
+        else if (Math.abs(velocity.y) < 2 && willJump){
             gravityMult = 0.5;
         }
         else{

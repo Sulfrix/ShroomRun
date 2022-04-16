@@ -13,7 +13,7 @@ public abstract class RNG extends GlobalManager {
         var rand = new Random();
         rand.setSeed((seed+offset)*100);
         offset++;
-        var offset = rand.nextInt(min, max+1);
+        var offset = min+rand.nextInt((max-min)+1);
         return offset;
     }
 

@@ -1,6 +1,8 @@
 package com.sulfrix.sulfur.lib.input;
 
-import com.sulfrix.shroomrun.ShroomRunOld;
+import com.sulfrix.shroomrun.Main;
+import com.sulfrix.sulfur.DisplayMode;
+import com.sulfrix.sulfur.SulfurGame;
 import processing.core.PApplet;
 
 import java.util.HashMap;
@@ -14,11 +16,7 @@ public class Input {
 
     public HashMap<String, InputAction> actions = new HashMap<>();
 
-    public PApplet owner;
-
-    public Input() {
-        addAction(new InputAction("jump", () -> KeyPressed(32)).addBinding(() -> mousePressed));
-    }
+    public SulfurGame owner;
 
     public boolean getActionPressed(String name) {
         return getAction(name).isPressed();
@@ -35,7 +33,7 @@ public class Input {
 
     public HashMap<Integer, Boolean> keys = new HashMap<>();
 
-    public void update(PApplet applet) {
+    public void update(SulfurGame applet) {
         mouseX = applet.mouseX;
         mouseY = applet.mouseY;
         pmouseX = applet.pmouseX;
@@ -47,13 +45,16 @@ public class Input {
     public void PressKey(int key) {
         keys.put(key, true);
         // hard coded keys, fight me.
+
         if (key == 99) {
-            ShroomRunOld.debugText = !ShroomRunOld.debugText;
+            owner.debugText = !owner.debugText;
         }
         if (key == 100) {
-            ShroomRunOld.framerateGraph.clear();
-            ShroomRunOld.frameGraph = !ShroomRunOld.frameGraph;
+            owner.framerateGraph.clear();
+            owner.frameGraph = !owner.frameGraph;
         }
+
+        System.out.println((char)key);
     }
 
     public void ReleaseKey(int key) {

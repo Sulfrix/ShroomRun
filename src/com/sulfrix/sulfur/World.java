@@ -1,6 +1,5 @@
 package com.sulfrix.sulfur;
 
-import com.sulfrix.shroomrun.ShroomRunOld;
 import com.sulfrix.sulfur.entity.Camera;
 import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.sulfur.lib.BoundingBox;
@@ -114,9 +113,7 @@ public class World {
             ent.queueRemove = true;
         } else {
             ent.world = null;
-            if (entities.contains(ent)) {
-                entities.remove(ent);
-            }
+            entities.remove(ent);
         }
 
     }
@@ -125,7 +122,7 @@ public class World {
         g.push();
         RenderOffsets(entity, g);
         entity.draw(timescale, g);
-        if (ShroomRunOld.debugOBB) {
+        if (false) {
             g.push();
             g.stroke(255);
             g.strokeWeight(1);
