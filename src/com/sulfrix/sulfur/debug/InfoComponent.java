@@ -7,6 +7,7 @@ import processing.core.PGraphics;
 public abstract class InfoComponent {
 
     public boolean expandedOnly = true;
+    public boolean clearOnScenario = false;
     public static final float FONT_SIZE = 10;
     public static final String FONT_NAME = "Arial";
 

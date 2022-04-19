@@ -4,6 +4,7 @@ import com.jogamp.nativewindow.WindowClosingProtocol;
 import com.jogamp.newt.Window;
 import com.sulfrix.shroomrun.scenarios.MainScenario;
 import com.sulfrix.sulfur.debug.DebugInfo;
+import com.sulfrix.sulfur.debug.InfoComponent;
 import com.sulfrix.sulfur.debug.components.FPS;
 import com.sulfrix.sulfur.lib.GlobalManagers.*;
 import com.sulfrix.sulfur.lib.input.Input;
@@ -113,7 +114,9 @@ public abstract class SulfurGame extends PApplet {
     }
 
     public void drawDebugText() {
-        debugInfo.drawDebugInfo(this, debugText);
+        if (currentScenario.world.time > 1) {
+            debugInfo.drawDebugInfo(this, debugText);
+        }
     }
 
     public void drawFramerateCounter() {
@@ -137,7 +140,16 @@ public abstract class SulfurGame extends PApplet {
             scenario.init();
             scenario.initialized = true;
         }
+        for (int i = debugInfo.components.size()-1; i >= 0; i--) {
+            InfoComponent c = debugInfo.components.get(i);
+            if (c.clearOnScenario) {
+                debugInfo.components.remove(c);
+            }
+        }
+        initializeDebug();
     }
+
+    public void initializeDebug() {}
 
     public void keyPressed(KeyEvent event) {
         super.keyPressed(event);
