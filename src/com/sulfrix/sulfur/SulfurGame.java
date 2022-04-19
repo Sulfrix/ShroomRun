@@ -3,6 +3,8 @@ package com.sulfrix.sulfur;
 import com.jogamp.nativewindow.WindowClosingProtocol;
 import com.jogamp.newt.Window;
 import com.sulfrix.shroomrun.scenarios.MainScenario;
+import com.sulfrix.sulfur.debug.DebugInfo;
+import com.sulfrix.sulfur.debug.components.FPS;
 import com.sulfrix.sulfur.lib.GlobalManagers.*;
 import com.sulfrix.sulfur.lib.input.Input;
 import processing.core.PApplet;
@@ -29,6 +31,8 @@ public abstract class SulfurGame extends PApplet {
     public Scenario currentScenario;
 
     public Input input = new Input();
+
+    public DebugInfo debugInfo;
 
     public SulfurGame(DisplayMode displayMode, Scenario startingScenario) {
         this.displayMode = displayMode;
@@ -67,6 +71,8 @@ public abstract class SulfurGame extends PApplet {
         AssetCache.init(this);
         TimeManager.init(this);
         RNG.init(this);
+        debugInfo = new DebugInfo();
+        debugInfo.components.add(new FPS());
         setCurrentScenario(startingScenario);
         gameSetup();
     }
@@ -84,12 +90,7 @@ public abstract class SulfurGame extends PApplet {
         }
 
         currentScenario.draw(TimeManager.deltaTime, g);
-        if (debugText) {
-            drawDebugText();
-        }
-        else {
-            drawFramerateCounter();
-        }
+        drawDebugText();
 
         if (frameGraph) {
             for (int i = 0; i < framerateGraph.size(); i++) {
@@ -112,22 +113,7 @@ public abstract class SulfurGame extends PApplet {
     }
 
     public void drawDebugText() {
-        g.push();
-        g.fill(0);
-        var s = 20;
-        g.textSize(s);
-        FontManager.quickUse(g, "Arial", s);
-        g.text(currentScenario.world.entities.size() + " Entities (" + currentScenario.world.renderedEnts + " Rendered)", 0, 1 * s);
-        g.text(Math.ceil(1000 / TimeManager.avgFrameTime) + " FPS", 0, 2 * s);
-        g.text("Cam Pos: " + currentScenario.world.camera.position, 0, 3 * s);
-        g.text("Optimal Zoom: " + Display.getOptimalScale(480, 360), 0, 4 * s);
-        g.text("Key: " + keyCode, 0, 5 * s);
-        g.text("Window Size: [" + width + ", " + height + "]", 0, 6 * s);
-        g.text("deltaTime: " + TimeManager.deltaTime, 0, 7 * s);
-        for (int i = 0; i < 50; i++) {
-            g.text(currentScenario.world.entities.get(i).getClass().getSimpleName(), 0, (8+i) * s);
-        }
-        g.pop();
+        debugInfo.drawDebugInfo(this, debugText);
     }
 
     public void drawFramerateCounter() {
