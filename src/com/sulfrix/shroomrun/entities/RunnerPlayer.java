@@ -63,10 +63,15 @@ public class RunnerPlayer extends Actor {
     }
 
     void MoveForward(double timescale) {
-        if (velocity.x < 10) {
-            velocity.x += 1 * timescale;
+        if (health > 0) {
+            if (velocity.x < 10) {
+                velocity.x += 1 * timescale;
+            } else {
+                velocity.x -= ((velocity.x - 10) / 15)*timescale;
+            }
         } else {
-            velocity.x -= ((velocity.x - 10) / 15)*timescale;
+            velocity.x -= (velocity.x / 15)*timescale;
         }
+
     }
 }

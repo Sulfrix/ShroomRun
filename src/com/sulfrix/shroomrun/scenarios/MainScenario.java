@@ -6,7 +6,10 @@ import com.sulfrix.shroomrun.entities.*;
 import com.sulfrix.shroomrun.entities.entityTypes.Damageable;
 import com.sulfrix.shroomrun.entities.ui.HUDEntity;
 import com.sulfrix.sulfur.entity.Camera;
+import com.sulfrix.sulfur.lib.GlobalManagers.Display;
+import com.sulfrix.sulfur.lib.GlobalManagers.FontManager;
 import com.sulfrix.sulfur.lib.GlobalManagers.RNG;
+import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -14,8 +17,10 @@ import java.util.Arrays;
 
 public class MainScenario extends Scenario {
     public Camera camera;
-    public Entity player;
+    public Actor player;
     public TerrainGen terrainGen;
+    public ScoreManager score;
+    public boolean gameOver = false;
 
     public MainScenario() {
     }
@@ -36,8 +41,8 @@ public class MainScenario extends Scenario {
         player = new RunnerPlayer(new PVector(0, -30));
         world.AddEntity(player);
         camera.focus = player;
-        camera.focusDragX = 1;
-        camera.focusDragY = 1;
+        camera.focusDragX = 1.1;
+        camera.focusDragY = 2;
         camera.focusOffset = new PVector(0, -30);
         terrainGen = new TerrainGen();
         world.AddEntity(terrainGen);
@@ -45,6 +50,8 @@ public class MainScenario extends Scenario {
         terrainGen.generate();
         var hud = new HUDEntity();
         world.AddEntity(hud);
+        score = new ScoreManager(player);
+        world.AddEntity(score);
     }
 
     @Override
@@ -52,13 +59,19 @@ public class MainScenario extends Scenario {
         super.update(timescale);
 
 
-        if (world.time > 2 && player instanceof Damageable) {
-            Damageable ply = (Damageable) player;
+        if (world.time > 2) {
             if (player.position.y > ((terrainGen.genY+20)*30)) {
-                ply.setHealth(0);
+                player.setHealth(0);
             }
-            if (ply.getHealth() <= 0) {
-                applet.setCurrentScenario(new MainScenario());
+            if (player.getHealth() <= 0 && !gameOver) {
+                score.setScore();
+                gameOver = true;
+                camera.focus = null;
+            }
+            if (gameOver) {
+                if (input.getActionPressed("jump")) {
+                    applet.setCurrentScenario(new MainScenario());
+                }
             }
         }
     }
@@ -66,5 +79,35 @@ public class MainScenario extends Scenario {
     @Override
     public void draw(double timescale, PGraphics g) {
         super.draw(timescale, g);
+        if (gameOver) {
+            g.push();
+            var scale = (float)Display.getOptimalScale(480, 360);
+            g.translate(0, 0, 10);
+            g.noStroke();
+            g.fill(0, 128);
+            g.rect(0, 0, g.width, g.height);
+            g.translate(g.width/2, g.height/2);
+            g.scale(scale);
+            g.fill(255);
+            g.textAlign(PConstants.CENTER);
+            {
+                g.push();
+                g.translate(0, -30);
+                FontManager.quickUse(g, "Arial", 20f*scale);
+                g.textSize(20);
+                g.text("Game Over!", 0, 0);
+                g.pop();
+            }
+            {
+                g.push();
+                g.translate(0, 30);
+                FontManager.quickUse(g, "Arial", 30f*scale);
+                g.textSize(30);
+                g.textAlign(PConstants.CENTER, PConstants.TOP);
+                g.text((int)score.getScore(), 0, 0);
+                g.pop();
+            }
+            g.pop();
+        }
     }
 }

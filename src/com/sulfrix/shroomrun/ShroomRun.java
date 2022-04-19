@@ -16,11 +16,12 @@ public class ShroomRun extends SulfurGame {
     @Override
     public void gameSetup() {
         input.addAction(new InputAction("jump", () -> input.KeyPressed(32)).addBinding(() -> mousePressed));
-        debugInfo.components.add(new BasicText((game -> "Testing"), true));
+        //debugInfo.components.add(new BasicText((game -> "Testing"), true));
     }
 
     @Override
     public void initializeDebug() {
         debugInfo.components.add(new EntityPosition("Camera", currentScenario.world.camera, true));
+        debugInfo.components.add(new EntityPosition("Player", currentScenario.world.camera.focus, true));
     }
 }

@@ -66,6 +66,7 @@ public abstract class SulfurGame extends PApplet {
             PGraphicsOpenGL ogl = ((PGraphicsOpenGL) g);
             ogl.textureSampling(3);
         }
+        hint(DISABLE_DEPTH_TEST);
         frameRate(300);
         FontManager.init(this);
         Display.init(this);
