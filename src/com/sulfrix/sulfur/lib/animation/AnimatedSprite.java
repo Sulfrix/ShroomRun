@@ -1,6 +1,6 @@
-package com.sulfrix.shroomrun.lib.animation;
+package com.sulfrix.sulfur.lib.animation;
 
-import com.sulfrix.shroomrun.lib.GlobalManagers.AssetCache;
+import com.sulfrix.sulfur.lib.GlobalManagers.AssetCache;
 import processing.core.PGraphics;
 import processing.core.PImage;
 

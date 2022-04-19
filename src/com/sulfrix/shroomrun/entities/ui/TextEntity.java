@@ -1,8 +1,8 @@
 package com.sulfrix.shroomrun.entities.ui;
 
-import com.sulfrix.shroomrun.Entity;
-import com.sulfrix.shroomrun.lib.BoundingBox;
-import com.sulfrix.shroomrun.lib.GlobalManagers.FontManager;
+import com.sulfrix.sulfur.entity.Entity;
+import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.GlobalManagers.FontManager;
 import processing.core.PGraphics;
 import processing.core.PVector;
 

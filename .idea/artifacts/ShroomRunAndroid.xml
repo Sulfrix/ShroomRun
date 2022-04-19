@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ShroomRunAndroid">
+    <output-path>$PROJECT_DIR$/out/artifacts/ShroomRunAndroid</output-path>
+    <root id="archive" name="ShroomRunAndroid.jar">
+      <element id="module-output" name="ShroomRun" />
+      <element id="directory" name="data">
+        <element id="dir-copy" path="$PROJECT_DIR$/data" />
+      </element>
+    </root>
+  </artifact>
+</component>

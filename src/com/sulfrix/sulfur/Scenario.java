@@ -1,7 +1,7 @@
-package com.sulfrix.shroomrun;
+package com.sulfrix.sulfur;
 
 
-import com.sulfrix.shroomrun.lib.input.Input;
+import com.sulfrix.sulfur.lib.input.Input;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
@@ -13,13 +13,14 @@ import processing.core.PGraphics;
 public abstract class Scenario {
     public World world;
     public Input input;
-    public PApplet applet;
+    public SulfurGame applet;
 
     public boolean updatedOnce;
 
+    public boolean initialized;
+
     public Scenario() {
         world = new World();
-        init();
     }
 
     public abstract void init();

@@ -1,7 +1,6 @@
-package com.sulfrix.shroomrun.entities;
+package com.sulfrix.sulfur.entity;
 
-import com.sulfrix.shroomrun.Entity;
-import com.sulfrix.shroomrun.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.BoundingBox;
 import processing.core.PVector;
 
 public abstract class PhysicsEntity extends Entity {

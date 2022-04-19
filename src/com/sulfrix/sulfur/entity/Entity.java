@@ -1,7 +1,8 @@
-package com.sulfrix.shroomrun;
+package com.sulfrix.sulfur.entity;
 
-import com.sulfrix.shroomrun.lib.BoundingBox;
-import com.sulfrix.shroomrun.lib.RenderPosType;
+import com.sulfrix.sulfur.World;
+import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.RenderPosType;
 import processing.core.*;
 
 import java.util.UUID;

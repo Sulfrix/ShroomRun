@@ -1,19 +1,24 @@
 package com.sulfrix.shroomrun.scenarios;
 
-import com.sulfrix.shroomrun.Entity;
-import com.sulfrix.shroomrun.Scenario;
-import com.sulfrix.shroomrun.ShroomRun;
+import com.sulfrix.sulfur.entity.Entity;
+import com.sulfrix.sulfur.Scenario;
 import com.sulfrix.shroomrun.entities.*;
 import com.sulfrix.shroomrun.entities.entityTypes.Damageable;
 import com.sulfrix.shroomrun.entities.ui.HUDEntity;
-import com.sulfrix.shroomrun.lib.GlobalManagers.RNG;
+import com.sulfrix.sulfur.entity.Camera;
+import com.sulfrix.sulfur.lib.GlobalManagers.RNG;
 import processing.core.PGraphics;
 import processing.core.PVector;
+
+import java.util.Arrays;
 
 public class MainScenario extends Scenario {
     public Camera camera;
     public Entity player;
     public TerrainGen terrainGen;
+
+    public MainScenario() {
+    }
 
     @Override
     public void init() {
@@ -47,16 +52,13 @@ public class MainScenario extends Scenario {
         super.update(timescale);
 
 
-        if (player instanceof Damageable) {
+        if (world.time > 2 && player instanceof Damageable) {
             Damageable ply = (Damageable) player;
             if (player.position.y > ((terrainGen.genY+20)*30)) {
                 ply.setHealth(0);
             }
             if (ply.getHealth() <= 0) {
-                if (applet instanceof ShroomRun) {
-                    var shrRun = (ShroomRun)applet;
-                    shrRun.setCurrentScenario(new MainScenario());
-                }
+                applet.setCurrentScenario(new MainScenario());
             }
         }
     }

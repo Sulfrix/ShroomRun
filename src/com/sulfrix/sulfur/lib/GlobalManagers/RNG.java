@@ -1,4 +1,4 @@
-package com.sulfrix.shroomrun.lib.GlobalManagers;
+package com.sulfrix.sulfur.lib.GlobalManagers;
 
 import processing.core.PApplet;
 
@@ -9,16 +9,11 @@ public abstract class RNG extends GlobalManager {
     public static int seed;
     public static int offset;
 
-    public static void init(PApplet ownerApplet) {
-        owner = ownerApplet;
-        Scramble();
-    }
-
     public static int RandomInt(int min, int max) {
         var rand = new Random();
         rand.setSeed((seed+offset)*100);
         offset++;
-        var offset = rand.nextInt(min, max+1);
+        var offset = min+rand.nextInt((max-min)+1);
         return offset;
     }
 

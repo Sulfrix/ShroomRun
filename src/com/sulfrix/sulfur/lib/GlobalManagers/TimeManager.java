@@ -1,5 +1,6 @@
-package com.sulfrix.shroomrun.lib.GlobalManagers;
+package com.sulfrix.sulfur.lib.GlobalManagers;
 
+import com.sulfrix.sulfur.SulfurGame;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -17,8 +18,10 @@ public abstract class TimeManager extends GlobalManager {
     public static ArrayList<Double> frameTimeList = new ArrayList<>();
     public static double avgFrameTime;
     public static final int fpsAvgSize = 100;
-    public static void init(PApplet ownerApplet) {
+
+    public static void init(SulfurGame ownerApplet) {
         owner = ownerApplet;
+        lastSync=owner.millis();
     }
 
     /**

@@ -1,16 +1,14 @@
 package com.sulfrix.shroomrun.entities.ui;
 
-import com.sulfrix.shroomrun.Entity;
+import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.shroomrun.entities.RunnerPlayer;
-import com.sulfrix.shroomrun.lib.BoundingBox;
-import com.sulfrix.shroomrun.lib.GlobalManagers.Display;
-import com.sulfrix.shroomrun.lib.GlobalManagers.FontManager;
-import com.sulfrix.shroomrun.lib.RenderPosType;
-import processing.core.PApplet;
+import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.GlobalManagers.Display;
+import com.sulfrix.sulfur.lib.GlobalManagers.FontManager;
+import com.sulfrix.sulfur.lib.RenderPosType;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PVector;
-import processing.opengl.PGraphics2D;
 
 public class HUDEntity extends Entity {
     RunnerPlayer player;

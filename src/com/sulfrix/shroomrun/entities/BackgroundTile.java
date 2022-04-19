@@ -1,8 +1,8 @@
 package com.sulfrix.shroomrun.entities;
 
-import com.sulfrix.shroomrun.Entity;
-import com.sulfrix.shroomrun.lib.BoundingBox;
-import com.sulfrix.shroomrun.lib.GlobalManagers.RNG;
+import com.sulfrix.sulfur.entity.Entity;
+import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.GlobalManagers.RNG;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -21,7 +21,7 @@ public class BackgroundTile extends Entity {
         this.depth = depth;
         ZPos = -depth;
         parallax = depth;
-        points = new float[(tileWidth/7)];
+        points = new float[(tileWidth/10)];
         for (int i = 0; i < points.length; i++) {
             double prog = (double)i/(double)(points.length-1);
             float xPos = (float) (worldPos.x + (prog-0.5)*tileWidth);

@@ -1,4 +1,4 @@
-package com.sulfrix.shroomrun.lib.animation;
+package com.sulfrix.sulfur.lib.animation;
 
 import processing.core.PImage;
 
