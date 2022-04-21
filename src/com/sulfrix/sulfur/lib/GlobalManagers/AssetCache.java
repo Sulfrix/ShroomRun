@@ -11,6 +11,7 @@ public abstract class AssetCache extends GlobalManager {
         if (images.containsKey(name)) {
             return images.get(name);
         } else {
+            System.out.println("Loading image " + name);
             PImage load = owner.loadImage(name);
             images.put(name, load);
             return load;

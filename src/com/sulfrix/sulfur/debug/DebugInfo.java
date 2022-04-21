@@ -15,6 +15,7 @@ public class DebugInfo implements PConstants {
 
     public void drawDebugInfo(SulfurGame game, boolean expanded) {
         PGraphics g = game.g;
+        g.push();
         g.textAlign(RIGHT, TOP);
         g.translate(g.width, 0);
         for (InfoComponent c : components) {
@@ -22,5 +23,6 @@ public class DebugInfo implements PConstants {
                 g.translate(0, c.draw(g, game));
             }
         }
+        g.pop();
     }
 }

@@ -16,6 +16,7 @@ public abstract class FontManager extends GlobalManager {
             return fontCache.get(fontName);
         }
         else {
+            //System.out.println("Loading font " + name + " at size " + size);
             PFont newFont = owner.createFont(name, size);
             fontCache.put(fontName, newFont);
             return newFont;

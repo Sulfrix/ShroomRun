@@ -68,7 +68,6 @@ public abstract class TimeManager extends GlobalManager {
         var steps = (int)Math.ceil(deltaTime);
         var dt = deltaTime/steps;
         steps = Math.min(10, steps);
-        System.out.println("Overstep activated: " + steps + " steps");
         return new TimestepInfo(steps, dt);
     }
 

@@ -13,6 +13,7 @@ public class Input {
     public int pmouseX = 0;
     public int pmouseY = 0;
     public boolean mousePressed = false;
+    public int lastKey = 0;
 
     public HashMap<String, InputAction> actions = new HashMap<>();
 
@@ -44,7 +45,12 @@ public class Input {
 
     public void PressKey(int key) {
         keys.put(key, true);
+        lastKey = key;
         // hard coded keys, fight me.
+
+        if (key == 96) {
+            owner.drawConsole = !owner.drawConsole;
+        }
 
         if (key == 99) {
             owner.debugText = !owner.debugText;
@@ -53,8 +59,6 @@ public class Input {
             owner.framerateGraph.clear();
             owner.frameGraph = !owner.frameGraph;
         }
-
-        System.out.println((char)key);
     }
 
     public void ReleaseKey(int key) {

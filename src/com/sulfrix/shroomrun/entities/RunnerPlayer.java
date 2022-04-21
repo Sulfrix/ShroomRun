@@ -1,6 +1,7 @@
 package com.sulfrix.shroomrun.entities;
 
 import com.sulfrix.shroomrun.entities.item.Item;
+import com.sulfrix.sulfur.debug.console.Console;
 import com.sulfrix.sulfur.lib.animation.AnimatedSprite;
 import processing.core.PVector;
 
@@ -63,11 +64,12 @@ public class RunnerPlayer extends Actor {
     }
 
     void MoveForward(double timescale) {
+        var moveSpeed = Console.getConVar("shroom_movespeed").getDouble();
         if (health > 0) {
-            if (velocity.x < 10) {
+            if (velocity.x < moveSpeed) {
                 velocity.x += 1 * timescale;
             } else {
-                velocity.x -= ((velocity.x - 10) / 15)*timescale;
+                velocity.x -= ((velocity.x - moveSpeed) / 15)*timescale;
             }
         } else {
             velocity.x -= (velocity.x / 15)*timescale;

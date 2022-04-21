@@ -1,10 +1,10 @@
 package com.sulfrix.sulfur;
 
-import com.jogamp.nativewindow.WindowClosingProtocol;
-import com.jogamp.newt.Window;
-import com.sulfrix.shroomrun.scenarios.MainScenario;
+import com.sulfrix.sulfur.debug.console.ConVar;
+import com.sulfrix.sulfur.debug.console.Console;
 import com.sulfrix.sulfur.debug.DebugInfo;
 import com.sulfrix.sulfur.debug.InfoComponent;
+import com.sulfrix.sulfur.debug.components.BasicText;
 import com.sulfrix.sulfur.debug.components.FPS;
 import com.sulfrix.sulfur.lib.GlobalManagers.*;
 import com.sulfrix.sulfur.lib.input.Input;
@@ -12,10 +12,8 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.event.KeyEvent;
 import processing.opengl.PGraphicsOpenGL;
-import processing.opengl.PSurfaceJOGL;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public abstract class SulfurGame extends PApplet {
 
@@ -23,6 +21,8 @@ public abstract class SulfurGame extends PApplet {
 
     public boolean debugText = false;
     public boolean frameGraph = false;
+    public boolean drawConsole = false;
+    public float consoleAnim = 0;
 
     public ArrayList<Double> framerateGraph = new ArrayList<>();
 
@@ -35,13 +35,22 @@ public abstract class SulfurGame extends PApplet {
 
     public DebugInfo debugInfo;
 
+    public Console console;
+
     public SulfurGame(DisplayMode displayMode, Scenario startingScenario) {
         this.displayMode = displayMode;
         this.startingScenario = startingScenario;
+        initConsole();
     }
 
     public SulfurGame(DisplayMode displayMode) {
         this.displayMode = displayMode;
+        initConsole();
+    }
+
+    public void initConsole() {
+        console = new Console();
+        Console.addConVar(new ConVar("sulfur_timescale", "1", "double", "Multiply time by this value."));
     }
 
     private boolean queueWindowChange;
@@ -75,6 +84,7 @@ public abstract class SulfurGame extends PApplet {
         RNG.init(this);
         debugInfo = new DebugInfo();
         debugInfo.components.add(new FPS());
+        debugInfo.components.add(new BasicText((game) -> "Last Key: " + Integer.toString(game.input.lastKey), true));
         setCurrentScenario(startingScenario);
         gameSetup();
     }
@@ -86,9 +96,10 @@ public abstract class SulfurGame extends PApplet {
         ortho();
         input.update(this);
         var ts = TimeManager.calcTimesteps();
+        var timescale = Console.getConVar("sulfur_timescale").getDouble();
         for (int step = 0; step < ts.timesteps; step++) {
-            currentScenario.update(ts.deltaTimePerStep);
-            instanceTime += ts.deltaTimePerStep;
+            currentScenario.update(ts.deltaTimePerStep*timescale);
+            instanceTime += ts.deltaTimePerStep*timescale;
         }
 
         currentScenario.draw(TimeManager.deltaTime, g);
@@ -104,6 +115,28 @@ public abstract class SulfurGame extends PApplet {
                 g.rect(i, (float) (height - (scale * t)), 1, (float) (scale * t));
                 g.pop();
             }
+        }
+        if (drawConsole) {
+            if (consoleAnim < 1) {
+                consoleAnim+=TimeManager.deltaTime/5;
+            }
+            if (consoleAnim > 1) {
+                consoleAnim = 1;
+            }
+        }
+        else {
+            if (consoleAnim > 0) {
+                consoleAnim-=TimeManager.deltaTime/5;
+            }
+            if (consoleAnim < 0) {
+                consoleAnim = 0;
+            }
+        }
+        if (consoleAnim > 0) {
+            push();
+            translate(0, -height*(1-consoleAnim));
+            console.draw(g);
+            pop();
         }
         TimeManager.sync();
         if (frameGraph) {
@@ -140,6 +173,7 @@ public abstract class SulfurGame extends PApplet {
         if (!scenario.initialized) {
             scenario.init();
             scenario.initialized = true;
+            drawConsole = false;
         }
         for (int i = debugInfo.components.size()-1; i >= 0; i--) {
             InfoComponent c = debugInfo.components.get(i);
@@ -153,6 +187,16 @@ public abstract class SulfurGame extends PApplet {
     public void initializeDebug() {}
 
     public void keyPressed(KeyEvent event) {
+        if (key == ESC) {
+            if (drawConsole) {
+                drawConsole = false;
+            }
+            key = 0;
+        }
+        if (drawConsole) {
+            console.inputKey(event);
+            return;
+        }
         super.keyPressed(event);
         input.PressKey(event.getKeyCode());
     }
