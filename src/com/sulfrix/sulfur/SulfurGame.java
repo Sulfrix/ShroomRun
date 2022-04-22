@@ -7,6 +7,7 @@ import com.sulfrix.sulfur.debug.DebugInfo;
 import com.sulfrix.sulfur.debug.InfoComponent;
 import com.sulfrix.sulfur.debug.components.BasicText;
 import com.sulfrix.sulfur.debug.components.FPS;
+import com.sulfrix.sulfur.debug.console.commands.HelpCommand;
 import com.sulfrix.sulfur.lib.GlobalManagers.*;
 import com.sulfrix.sulfur.lib.input.Input;
 import processing.core.PApplet;
@@ -41,6 +42,8 @@ public abstract class SulfurGame extends PApplet {
 
     public Console console;
 
+    public ArrayList<String> packages = new ArrayList<>();
+
     public SulfurGame(DisplayMode displayMode, Scenario startingScenario) {
         this.displayMode = displayMode;
         this.startingScenario = startingScenario;
@@ -63,6 +66,7 @@ public abstract class SulfurGame extends PApplet {
         } catch (IOException e) {
             System.out.println("Could not read config.cfg" + e);
         }
+        packages.add("com.sulfrix.sulfur");
     }
 
     private void engineInitConVars() {
@@ -70,6 +74,9 @@ public abstract class SulfurGame extends PApplet {
         Console.addConVar(new ConVar("cfg_autowrite", "1", "boolean", "Write config on exit."));
         Console.addConVar(new ConVar("console_pause", "0", "boolean", "Pauses the game while the console is open.").save());
         Console.addConVar(new ConVar("console_fontsize", "10", "int", "Console font size.").save());
+        Console.addConVar(new ConVar("fullscreen", "0", "boolean", "Enables fullscreen. Applies at launch, saving is required.").save());
+        Console.addConVar(new ConVar("sulfur_objculling", "1", "boolean", "Deletes tiles when offscreen."));
+        Console.addConCommand(new HelpCommand());
         Console.addConCommand(new ConCommand("clear", (game, args) -> {
             game.console.lines.clear();
         }, "Clears the console"));
@@ -135,6 +142,26 @@ public abstract class SulfurGame extends PApplet {
         Console.addConCommand(new ConCommand("resetall", (game, args) -> {
             Console.resetAll();
         }, "Writes all savable ConVars to a file."));
+        Console.addConCommand(new ConCommand("listpackages", (game, args) -> {
+            System.out.println("Packages that can be used in console:");
+            for (String str : packages) {
+                System.out.println(str);
+            }
+        }, "Lists all packages that can be used in the console."));
+        Console.addConCommand(new ConCommand("scenario_load", (game, args) -> {
+            if (args.length > 0) {
+                var scenarioName = args[0];
+                Class scenario = findClassByName(scenarioName, packages.toArray(new String[0]));
+                if (scenario!= null && scenario.getSuperclass() == Scenario.class) {
+                    try {
+                        Scenario scenario1 = (Scenario) scenario.getDeclaredConstructor().newInstance();
+                        game.setCurrentScenario(scenario1);
+                    } catch (Exception e) {
+                        System.out.println("Could not load scenario.");
+                    }
+                }
+            }
+        }, "Loads a scenario."));
         initConVars();
     }
 
@@ -158,10 +185,14 @@ public abstract class SulfurGame extends PApplet {
     public double instanceTime = 0;
 
     public final void settings() {
-        if (displayMode != null) {
-            displayMode.use(this);
+        if (!Console.getConVar("fullscreen").getBoolean()) {
+            if (displayMode != null) {
+                displayMode.use(this);
+            } else {
+                size(480, 360);
+            }
         } else {
-            size(480, 360);
+            fullScreen(P3D);
         }
         noSmooth();
     }
@@ -274,7 +305,6 @@ public abstract class SulfurGame extends PApplet {
         if (!scenario.initialized) {
             scenario.init();
             scenario.initialized = true;
-            drawConsole = false;
         }
         for (int i = debugInfo.components.size()-1; i >= 0; i--) {
             InfoComponent c = debugInfo.components.get(i);
@@ -305,6 +335,18 @@ public abstract class SulfurGame extends PApplet {
     public void keyReleased(KeyEvent event) {
         super.keyReleased(event);
         input.ReleaseKey(event.getKeyCode());
+    }
+
+    public static final Class<?> findClassByName(String classname, String[] searchPackages) {
+        for(int i=0; i<searchPackages.length; i++){
+            try{
+                return Class.forName(searchPackages[i] + "." + classname);
+            } catch (ClassNotFoundException e){
+                //not in this package, try another
+            }
+        }
+        //nothing found: return null or throw ClassNotFoundException
+        return null;
     }
 
 }

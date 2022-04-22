@@ -21,8 +21,8 @@ public class Console {
 
     static SulfurGame game;
 
-    protected static HashMap<String, ConVar> convars = new HashMap<>();
-    protected static HashMap<String, ConCommand> concommands = new HashMap<>();
+    public static HashMap<String, ConVar> convars = new HashMap<>();
+    public static HashMap<String, ConCommand> concommands = new HashMap<>();
 
     public ArrayList<String> lines;
     public StringBuilder inputbuffer = new StringBuilder();
@@ -138,7 +138,8 @@ public class Console {
                         System.out.println(convar.name + " cannot be modified in the console");
                     }
                 } else {
-                    System.out.println(convar.name + " = " + convar.getString());
+                    System.out.println(convar.name + " = " + convar.getString() + " (" + convar.preferredType + ", default " + convar.defaultValue + ")");
+                    System.out.println(convar.desc);
                 }
             } else if (concommands.containsKey(commandName)) {
                 ConCommand conCommand = concommands.get(commandName);

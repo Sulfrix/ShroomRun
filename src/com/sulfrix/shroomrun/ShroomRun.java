@@ -18,6 +18,8 @@ public class ShroomRun extends SulfurGame {
     @Override
     public void gameSetup() {
         input.addAction(new InputAction("jump", () -> input.KeyPressed(32)).addBinding(() -> mousePressed));
+        packages.add(getClass().getPackageName());
+        packages.add("com.sulfrix.shroomrun.scenarios");
         //debugInfo.components.add(new BasicText((game -> "Testing"), true));
     }
 
@@ -30,5 +32,6 @@ public class ShroomRun extends SulfurGame {
     @Override
     public void initConVars() {
         Console.addConVar(new ConVar("shroom_movespeed", "10", "double", "The speed at which the shroom runs."));
+        Console.addConVar(new ConVar("shroom_spikelimit", "1", "int", "The max amount of spikes which can generate on a ground tile"));
     }
 }

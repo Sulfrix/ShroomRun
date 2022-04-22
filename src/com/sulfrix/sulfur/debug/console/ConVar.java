@@ -9,6 +9,13 @@ public class ConVar {
     public String defaultValue;
     public String desc;
 
+    public int cachedInt;
+    public float cachedFloat;
+    public double cachedDouble;
+    public boolean cachedBoolean;
+
+    public boolean cacheValid;
+
     public ConVar(String name, String defaultValue, String preferredType, String desc) {
         this.name = name;
         this.defaultValue = defaultValue;
@@ -23,37 +30,64 @@ public class ConVar {
     }
 
     public int getInt() {
-        int out = 0;
-        try {
-            out = Integer.parseInt(value);
-        } catch (NumberFormatException e) {}
-        return out;
+        if (cacheValid) {
+            return cachedInt;
+        } else {
+            int out = 0;
+            try {
+                out = Integer.parseInt(value);
+            } catch (NumberFormatException e) {}
+            cachedInt = out;
+            cacheValid = true;
+            return out;
+        }
     }
     public float getFloat() {
-        float out = 0f;
-        try {
-            out = Float.parseFloat(value);
-        } catch (NumberFormatException e) {}
-        return out;
+        if (cacheValid) {
+            return cachedFloat;
+        } else {
+            float out = 0f;
+            try {
+                out = Float.parseFloat(value);
+            } catch (NumberFormatException e) {}
+            cachedFloat = out;
+            cacheValid = true;
+            return out;
+        }
+
     }
     public double getDouble() {
-        double out = 0d;
-        try {
-            out = Double.parseDouble(value);
-        } catch (NumberFormatException e) {}
-        return out;
+        if (cacheValid) {
+            return cachedDouble;
+        } else {
+            double out = 0d;
+            try {
+                out = Double.parseDouble(value);
+            } catch (NumberFormatException e) {}
+            cacheValid = true;
+            cachedDouble = out;
+            return out;
+        }
     }
     public boolean getBoolean() {
-        if (getInt() >= 1) {
-            return true;
+        if (cacheValid) {
+            return cachedBoolean;
+        } else {
+            boolean out = false;
+            if (getInt() >= 1) {
+                out = true;
+            }
+            if (value.equalsIgnoreCase("true")) {
+                out = true;
+            }
+            if (getDouble() >= 1) {
+                out =  true;
+            }
+            cachedBoolean = out;
+            cacheValid = true;
+            return out;
         }
-        if (value.equalsIgnoreCase("true")) {
-            return true;
-        }
-        if (getDouble() >= 1) {
-            return true;
-        }
-        return false;
+
     }
     public String getString() {
         return value;
@@ -69,6 +103,6 @@ public class ConVar {
 
     public void setValue(String value) {
         this.value = value;
+        cacheValid = false;
     }
-
 }

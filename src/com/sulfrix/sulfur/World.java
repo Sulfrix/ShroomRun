@@ -1,5 +1,6 @@
 package com.sulfrix.sulfur;
 
+import com.sulfrix.sulfur.debug.console.Console;
 import com.sulfrix.sulfur.entity.Camera;
 import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.sulfur.lib.BoundingBox;
@@ -42,7 +43,7 @@ public class World {
                 if (e.updateEnabled) {
                     e.update(timescale * globalTimescale);
                 }
-                if (e.removeOffscreen && cambb.boxIsLeftOf(e.boundingBox, e.position, camera.position)) {
+                if (Console.getConVar("sulfur_objculling").getBoolean() && e.removeOffscreen && cambb.boxIsLeftOf(e.boundingBox, e.position, camera.position)) {
                     RemoveEntity(e);
                 }
             }

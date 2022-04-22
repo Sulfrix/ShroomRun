@@ -1,5 +1,6 @@
 package com.sulfrix.shroomrun.entities;
 
+import com.sulfrix.sulfur.debug.console.Console;
 import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.sulfur.lib.BoundingBox;
 import com.sulfrix.sulfur.lib.GlobalManagers.RNG;
@@ -44,7 +45,7 @@ public class TerrainGen extends Entity {
         }
         genY += heightChange;
         offset++;
-        var hazards = RNG.RandomInt(0, 1, offset);
+        var hazards = RNG.RandomInt(0, Console.getConVar("shroom_spikelimit").getInt(), offset);
         if (genWidth <= 4) {
             hazards = 0;
         }
