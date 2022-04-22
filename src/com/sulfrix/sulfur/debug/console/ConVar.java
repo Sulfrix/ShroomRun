@@ -17,6 +17,11 @@ public class ConVar {
         this.desc = desc;
     }
 
+    public ConVar save() {
+        saveValue = true;
+        return this;
+    }
+
     public int getInt() {
         int out = 0;
         try {

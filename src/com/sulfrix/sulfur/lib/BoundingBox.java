@@ -12,7 +12,6 @@ public class BoundingBox {
         width = w;
         height = h;
     }
-    //TODO: "if bounding boxes touch" method should go here.
 
     public static boolean touching(BoundingBox b1, PVector p1, BoundingBox b2, PVector p2) {
         /*double x1 = p1.x + b1.offset.x;

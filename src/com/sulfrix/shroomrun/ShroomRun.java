@@ -18,7 +18,6 @@ public class ShroomRun extends SulfurGame {
     @Override
     public void gameSetup() {
         input.addAction(new InputAction("jump", () -> input.KeyPressed(32)).addBinding(() -> mousePressed));
-        Console.addConVar(new ConVar("shroom_movespeed", "10", "double", "The speed at which the shroom runs."));
         //debugInfo.components.add(new BasicText((game -> "Testing"), true));
     }
 
@@ -26,5 +25,10 @@ public class ShroomRun extends SulfurGame {
     public void initializeDebug() {
         debugInfo.components.add(new EntityPosition("Camera", currentScenario.world.camera, true));
         debugInfo.components.add(new EntityPosition("Player", currentScenario.world.camera.focus, true));
+    }
+
+    @Override
+    public void initConVars() {
+        Console.addConVar(new ConVar("shroom_movespeed", "10", "double", "The speed at which the shroom runs."));
     }
 }

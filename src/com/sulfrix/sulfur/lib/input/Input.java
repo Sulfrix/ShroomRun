@@ -3,6 +3,7 @@ package com.sulfrix.sulfur.lib.input;
 import com.sulfrix.shroomrun.Main;
 import com.sulfrix.sulfur.DisplayMode;
 import com.sulfrix.sulfur.SulfurGame;
+import com.sulfrix.sulfur.debug.console.Console;
 import processing.core.PApplet;
 
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class Input {
         // hard coded keys, fight me.
 
         if (key == 96) {
-            owner.drawConsole = !owner.drawConsole;
+            Console.runCommand("console_toggle");
         }
 
         if (key == 99) {

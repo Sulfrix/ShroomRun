@@ -1,5 +1,6 @@
 package com.sulfrix.sulfur;
 
+import com.sulfrix.sulfur.debug.console.ConCommand;
 import com.sulfrix.sulfur.debug.console.ConVar;
 import com.sulfrix.sulfur.debug.console.Console;
 import com.sulfrix.sulfur.debug.DebugInfo;
@@ -13,6 +14,7 @@ import processing.core.PConstants;
 import processing.event.KeyEvent;
 import processing.opengl.PGraphicsOpenGL;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public abstract class SulfurGame extends PApplet {
@@ -25,6 +27,8 @@ public abstract class SulfurGame extends PApplet {
     public float consoleAnim = 0;
 
     public ArrayList<Double> framerateGraph = new ArrayList<>();
+
+    public boolean paused;
 
     public DisplayMode displayMode;
 
@@ -49,9 +53,104 @@ public abstract class SulfurGame extends PApplet {
     }
 
     public void initConsole() {
-        console = new Console();
-        Console.addConVar(new ConVar("sulfur_timescale", "1", "double", "Multiply time by this value."));
+        console = new Console(this);
+        System.out.println("Sulfur dev");
+        System.out.println("Run help_console for help on the console itself");
+        System.out.println("Run help for commands/convars");
+        engineInitConVars();
+        try {
+            Console.loadFromFile("config");
+        } catch (IOException e) {
+            System.out.println("Could not read config.cfg" + e);
+        }
     }
+
+    private void engineInitConVars() {
+        Console.addConVar(new ConVar("sulfur_timescale", "1", "double", "Multiply time by this value."));
+        Console.addConVar(new ConVar("cfg_autowrite", "1", "boolean", "Write config on exit."));
+        Console.addConVar(new ConVar("console_pause", "0", "boolean", "Pauses the game while the console is open.").save());
+        Console.addConVar(new ConVar("console_fontsize", "10", "int", "Console font size.").save());
+        Console.addConCommand(new ConCommand("clear", (game, args) -> {
+            game.console.lines.clear();
+        }, "Clears the console"));
+        Console.addConCommand(new ConCommand("repeat", (game, args) -> {
+            if (args.length >= 2) {
+                var command = args[0];
+                int repetitions = ConCommand.getInt(args[1]);
+                for (int i = 0; i < repetitions; i++) {
+                    Console.runCommand(command, false);
+                }
+            }
+        }, "repeats a command n times", new String[]{"string command", "int n"}));
+        Console.addConCommand(new ConCommand("console_toggle", (game, args) -> {
+            game.drawConsole = !game.drawConsole;
+            if (Console.getConVar("console_pause").getBoolean()) {
+                if (game.drawConsole) {
+                    Console.runCommand("pause");
+                } else {
+                    Console.runCommand("unpause");
+                }
+            }
+
+        }, "toggles the console"));
+        Console.addConCommand(new ConCommand("pause", (game, args) -> {
+            game.paused = true;
+        }, "Pauses the game"));
+        Console.addConCommand(new ConCommand("unpause", (game, args) -> {
+            game.paused = false;
+        }, "Unpauses the game"));
+        Console.addConCommand(new ConCommand("console_help", (game, args) -> {
+            System.out.println("Console tips:");
+            System.out.println("Ctrl+D to clear input box");
+            System.out.println("Up & Down Arrows for command history");
+        }, "Console usage"));
+        Console.addConCommand(new ConCommand("exit", (game, args) -> {
+            game.exit();
+        }, "Exit the game."));
+        Console.addConCommand(new ConCommand("cfg_write", (game, args) -> {
+            if (args.length > 0) {
+                try {
+                    Console.writeToFile(args[0]);
+                } catch (IOException e) {
+                    System.out.println("Could not write. " + e);
+                }
+
+            }
+        }, "Writes all savable ConVars to a file."));
+        Console.addConCommand(new ConCommand("exec", (game, args) -> {
+            ConVar autoWrite = Console.getConVar("cfg_autowrite");
+            if (autoWrite.getBoolean()) {
+                Console.runCommand("cfg_autowrite 0");
+                System.out.println("Notice: auto config saving disabled");
+            }
+            if (args.length > 0) {
+                try {
+                    Console.loadFromFile(args[0]);
+                } catch (IOException e) {
+                    System.out.println("File not found. " + e);
+                }
+
+            }
+        }, "Writes all savable ConVars to a file."));
+        Console.addConCommand(new ConCommand("resetall", (game, args) -> {
+            Console.resetAll();
+        }, "Writes all savable ConVars to a file."));
+        initConVars();
+    }
+
+    @Override
+    public void exit() {
+        if (Console.getConVar("cfg_autowrite").getBoolean()) {
+            try {
+                Console.writeToFile("config");
+            } catch (IOException e) {
+                System.out.println("Could not write config.cfg");
+            }
+        }
+        super.exit();
+    }
+
+    public void initConVars() {}
 
     private boolean queueWindowChange;
     private DisplayMode targetDisplayMode;
@@ -95,11 +194,13 @@ public abstract class SulfurGame extends PApplet {
         background(176, 252, 255);
         ortho();
         input.update(this);
-        var ts = TimeManager.calcTimesteps();
-        var timescale = Console.getConVar("sulfur_timescale").getDouble();
-        for (int step = 0; step < ts.timesteps; step++) {
-            currentScenario.update(ts.deltaTimePerStep*timescale);
-            instanceTime += ts.deltaTimePerStep*timescale;
+        if (!paused) {
+            var ts = TimeManager.calcTimesteps();
+            var timescale = Console.getConVar("sulfur_timescale").getDouble();
+            for (int step = 0; step < ts.timesteps; step++) {
+                currentScenario.update(ts.deltaTimePerStep*timescale);
+                instanceTime += ts.deltaTimePerStep*timescale;
+            }
         }
 
         currentScenario.draw(TimeManager.deltaTime, g);
@@ -189,7 +290,7 @@ public abstract class SulfurGame extends PApplet {
     public void keyPressed(KeyEvent event) {
         if (key == ESC) {
             if (drawConsole) {
-                drawConsole = false;
+                Console.runCommand("console_toggle");
             }
             key = 0;
         }

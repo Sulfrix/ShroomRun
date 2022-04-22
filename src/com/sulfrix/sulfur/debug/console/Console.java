@@ -1,14 +1,16 @@
 package com.sulfrix.sulfur.debug.console;
 
+import com.sulfrix.sulfur.SulfurGame;
 import com.sulfrix.sulfur.lib.GlobalManagers.FontManager;
 import processing.core.PGraphics;
 
 import processing.event.KeyEvent;
-import java.io.OutputStream;
-import java.io.PrintStream;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +18,8 @@ public class Console {
 
     public int drawLineCount = 30;
     public int drawFontSize = 10;
+
+    static SulfurGame game;
 
     protected static HashMap<String, ConVar> convars = new HashMap<>();
     protected static HashMap<String, ConCommand> concommands = new HashMap<>();
@@ -26,29 +30,35 @@ public class Console {
     public ArrayList<String> commandHistory = new ArrayList<>();
     public int historyIndex;
 
-    public Console() {
+    // wow that looks ugly in here
+    public static Pattern commandPattern = Pattern.compile("(((?<!\\\\)\"(.*?)(?<!\\\\)\")|(\\S+))");
+
+    public Console(SulfurGame game) {
         lines = new ArrayList<>();
         var consoleout = new ConsoleOut(System.out, this);
         System.setOut(consoleout);
         System.setErr(consoleout);
+        this.game = game;
     }
 
     public void inputKey(KeyEvent event) {
         char toInput = event.getKey();
-        final int[] allowedTypes = new int[] {1, 2, 9, 12, 20, 21, 22, 23, 24, 25, 26, 27};
+        final int[] allowedTypes = new int[]{1, 2, 9, 12, 20, 21, 22, 23, 24, 25, 26, 27};
         //System.out.println("(keyCode) " + event.getKeyCode() + " " + Character.getType(event.getKey()));
 
         if (event.getKeyCode() == 10) {
             var runcmd = clearInput();
             runCommand(runcmd, true);
             if (runcmd.length() > 0) {
-                commandHistory.add(runcmd);
-                historyIndex++;
+                if (commandHistory.size() == 0 || !runcmd.equals(commandHistory.get(commandHistory.size()-1))) {
+                    commandHistory.add(runcmd);
+                    historyIndex++;
+                }
             }
         }
 
         if (event.getKeyCode() == 8 && caret > 0) {
-            inputbuffer.deleteCharAt(caret-1);
+            inputbuffer.deleteCharAt(caret - 1);
             caret--;
             if (inputbuffer.length() == 0) {
                 historyIndex = commandHistory.size();
@@ -93,7 +103,7 @@ public class Console {
             historyIndex = 0;
         }
         if (historyIndex >= commandHistory.size()) {
-            historyIndex = commandHistory.size()-1;
+            historyIndex = commandHistory.size() - 1;
         }
         var hist = commandHistory.get(historyIndex);
         inputbuffer = new StringBuilder(hist);
@@ -114,26 +124,16 @@ public class Console {
         if (isUser) {
             System.out.println("] " + command);
         }
-        Pattern commandPattern = Pattern.compile("((\"(.*?)\")|(\\S+))");
         Matcher matcher = commandPattern.matcher(command);
         String commandName = "";
-        ArrayList<String> args = new ArrayList<>();
         if (matcher.find()) {
             commandName = matcher.group().toLowerCase();
-            //System.out.println("Running " + commandName);
-            while (matcher.find()) {
-                var arg = matcher.group();
-                if (matcher.group(3) != null) {
-                    arg = matcher.group(3);
-                }
-                //System.out.println(">" + arg);
-                args.add(arg);
-            }
+            String[] args = parseArgs(matcher);
             if (convars.containsKey(commandName)) {
                 ConVar convar = convars.get(commandName);
-                if (args.size() > 0) {
+                if (args.length > 0) {
                     if (convar.userMutable || !isUser) {
-                        convar.setValue(args.get(0));
+                        convar.setValue(args[0]);
                     } else {
                         System.out.println(convar.name + " cannot be modified in the console");
                     }
@@ -141,13 +141,69 @@ public class Console {
                     System.out.println(convar.name + " = " + convar.getString());
                 }
             } else if (concommands.containsKey(commandName)) {
-
+                ConCommand conCommand = concommands.get(commandName);
+                conCommand.exec(game, args);
             } else {
                 System.out.println("Unknown command/convar " + commandName);
             }
         }
-
         return true;
+    }
+
+    public static void writeToFile(String name) throws IOException {
+        if (!name.endsWith(".cfg")) {
+            name+= ".cfg";
+        }
+        FileWriter fileWriter = new FileWriter("cfg/" + name);
+        PrintWriter printWriter = new PrintWriter(fileWriter);
+        for (String k : convars.keySet()) {
+            ConVar var = convars.get(k);
+            if (var.saveValue) {
+                if (!var.getString().equals(var.defaultValue)) {
+                    printWriter.println(var.writeCommand());
+                }
+            }
+        }
+        printWriter.close();
+    }
+
+    public static void loadFromFile(String name) throws IOException {
+        if (!name.endsWith(".cfg")) {
+            name+= ".cfg";
+        }
+        Scanner scanner = new Scanner(new File("cfg/" + name));
+        while (scanner.hasNext()) {
+            Console.runCommand(scanner.nextLine());
+        }
+    }
+
+    public static void resetAll() {
+        for (ConVar var : convars.values()) {
+            var.setValue(var.defaultValue);
+        }
+    }
+
+    public static String[] parseArgs(Matcher matcher) {
+        //System.out.println("Running " + commandName);
+        ArrayList<String> args = new ArrayList<>();
+        while (matcher.find()) {
+            var arg = matcher.group();
+            if (matcher.group(3) != null) {
+                arg = matcher.group(3);
+            }
+            //System.out.println(">" + arg);
+            args.add(arg);
+        }
+        return args.toArray(new String[0]);
+    }
+
+    public static String[] parseArgs(String string) {
+        var matcher = commandPattern.matcher(string);
+        return parseArgs(matcher);
+    }
+
+    public static boolean runCommand(String command) {
+        return runCommand(command, false);
     }
 
     public static void addConVar(ConVar convar) {
@@ -158,64 +214,69 @@ public class Console {
         return convars.get(name);
     }
 
+    public static void addConCommand(ConCommand conCommand) {
+        concommands.put(conCommand.name, conCommand);
+    }
+
     // This is stupid.
     public static boolean contains(final int[] arr, final int key) {
         return Arrays.stream(arr).anyMatch(i -> i == key);
     }
 
     public void draw(PGraphics g) {
-        drawLineCount = (g.height/drawFontSize)-4;
-        var rectHeight = ((drawLineCount+1)*drawFontSize)+8;
+        drawFontSize = Math.max(10, Console.getConVar("console_fontsize").getInt());
+        g.push();
+        FontManager.quickUse(g, "Arial", drawFontSize);
+        g.textSize(drawFontSize);
+        drawLineCount = (g.height / drawFontSize) - 4;
+        var rectHeight = ((drawLineCount + 1) * drawFontSize) + g.textDescent()*2 + 3;
+        g.translate(0, 0, 20);
+        g.noStroke();
+        g.fill(0, 127);
+        g.rect(0, 0, g.width, rectHeight);
+        g.fill(0, 255, 0);
         {
             g.push();
-            g.translate(0, 0, 20);
-            g.noStroke();
-            g.fill(0, 127);
-            g.rect(0, 0, g.width, rectHeight);
-            FontManager.quickUse(g, "Arial", drawFontSize);
-            g.textSize(drawFontSize);
-            g.fill(0, 255, 0);
-            {
-                g.push();
-                for (int i = 0; i < drawLineCount; i++) {
-                    int x = lines.size()-i-1;
-                    if (x >= lines.size() || x < 0) {
-                        break;
-                    }
-                    g.push();
-                    g.translate(0, (drawLineCount-i)*drawFontSize);
-                    g.text(lines.get(x), 0, 0);
-                    g.pop();
+            for (int i = 0; i < drawLineCount; i++) {
+                int x = lines.size() - i - 1;
+                if (x >= lines.size() || x < 0) {
+                    break;
                 }
-                g.pop();
-            }
-            {
                 g.push();
-                g.translate(0, (drawLineCount*drawFontSize)+2);
-                g.rect(0, 0, g.width, 1);
+                g.translate(0, (drawLineCount - i) * drawFontSize);
+                g.text(lines.get(x), 0, 0);
                 g.pop();
             }
-            {
-                g.push();
-                g.translate(0, ((drawLineCount+1)*drawFontSize)+4);
-                var caretPos = g.textWidth(inputbuffer.substring(0, caret));
-                if (caretPos > g.width-50) {
-                    g.push();
-                    g.fill(0, 255, 0, 127);
-                    g.rect(0, -drawFontSize, 20, drawFontSize+g.textDescent());
-                    g.pop();
-                    g.translate(-(caretPos-(g.width-50)), 0);
-                }
-                g.text(inputbuffer.toString(), 0, 0);
-                g.rect(caretPos, -drawFontSize, 1, drawFontSize+g.textDescent());
-                g.pop();
-            }
-            g.rect(0, rectHeight, g.width, 1);
             g.pop();
         }
+        float inputPos = (drawLineCount * drawFontSize) + g.textDescent();
+        {
+            g.push();
+            g.translate(0, inputPos);
+            g.rect(0, 0, g.width, 1);
+            g.pop();
+        }
+        {
+            g.push();
+            g.translate(0, inputPos+drawFontSize+2);
+            var caretPos = g.textWidth(inputbuffer.substring(0, caret));
+            if (caretPos > g.width - 50) {
+                g.push();
+                g.fill(0, 255, 0, 127);
+                g.rect(0, -drawFontSize, 20, drawFontSize + g.textDescent());
+                g.pop();
+                g.translate(-(caretPos - (g.width - 50)), 0);
+            }
+            g.text(inputbuffer.toString(), 0, 0);
+            g.rect(caretPos, -drawFontSize, 1, drawFontSize + g.textDescent());
+            g.pop();
+        }
+        g.rect(0, rectHeight, g.width, 1);
+        g.pop();
+
     }
 
-    public class ConsoleOut extends PrintStream {
+    public static class ConsoleOut extends PrintStream {
         public String buffer = "";
         public Console owner;
 
@@ -226,7 +287,7 @@ public class Console {
 
         public void scanChar(char c) {
             if (c != '\n') {
-                buffer+=c;
+                buffer += c;
             } else {
                 owner.lines.add(buffer);
                 buffer = "";
