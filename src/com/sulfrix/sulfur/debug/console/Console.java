@@ -38,7 +38,7 @@ public class Console {
         var consoleout = new ConsoleOut(System.out, this);
         System.setOut(consoleout);
         System.setErr(consoleout);
-        this.game = game;
+        Console.game = game;
     }
 
     public void inputKey(KeyEvent event) {
@@ -125,7 +125,7 @@ public class Console {
             System.out.println("] " + command);
         }
         Matcher matcher = commandPattern.matcher(command);
-        String commandName = "";
+        String commandName;
         if (matcher.find()) {
             commandName = matcher.group().toLowerCase();
             String[] args = parseArgs(matcher);
@@ -151,7 +151,7 @@ public class Console {
         return true;
     }
 
-    public static void writeToFile(String name) throws IOException {
+    public static void writeToFile(String name, int forceLevel) throws IOException {
         if (!name.endsWith(".cfg")) {
             name+= ".cfg";
         }
@@ -159,8 +159,8 @@ public class Console {
         PrintWriter printWriter = new PrintWriter(fileWriter);
         for (String k : convars.keySet()) {
             ConVar var = convars.get(k);
-            if (var.saveValue) {
-                if (!var.getString().equals(var.defaultValue)) {
+            if (var.saveValue || forceLevel > 1) {
+                if (!var.getString().equals(var.defaultValue) || forceLevel > 0) {
                     printWriter.println(var.writeCommand());
                 }
             }
@@ -317,7 +317,7 @@ public class Console {
 
         @Override
         public void println(char x) {
-            println(x);
+            println(Character.toString(x));
         }
     }
 }

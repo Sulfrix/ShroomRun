@@ -27,7 +27,7 @@ public class HUDEntity extends Entity {
 
     @Override
     public void draw(double timescale, PGraphics g) {
-        float scale = (float)Display.getOptimalScale(480, 460);
+        //float scale = (float)Display.getOptimalScale(480, 460);
 
         DrawHealthBar(g);
         /*g.push();

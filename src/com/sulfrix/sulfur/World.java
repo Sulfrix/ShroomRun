@@ -43,7 +43,7 @@ public class World {
                 if (e.updateEnabled) {
                     e.update(timescale * globalTimescale);
                 }
-                if (Console.getConVar("sulfur_objculling").getBoolean() && e.removeOffscreen && cambb.boxIsLeftOf(e.boundingBox, e.position, camera.position)) {
+                if (Console.getConVar("sulfur_entculling").getBoolean() && e.removeOffscreen && cambb.boxIsLeftOf(e.boundingBox, e.position, camera.position)) {
                     RemoveEntity(e);
                 }
             }

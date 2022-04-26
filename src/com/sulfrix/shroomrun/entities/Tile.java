@@ -49,8 +49,6 @@ public class Tile extends Entity {
             g.scale(-1, 1);
         }
         g.image(texImg, 0, 0, 30, 30);
-        /*if (world.input.mousePressed) {
-            g.image(texImg, 0, 0, 30, 200);
-        }*/
+
     }
 }

@@ -48,8 +48,7 @@ public class Hazard extends Entity {
         super.collide(source);
         if (source instanceof Damageable) {
             if (!hasCollided.contains(source)) {
-                if (source instanceof PhysicsEntity) {
-                    var phys = (PhysicsEntity)source;
+                if (source instanceof PhysicsEntity phys) {
                     if (!phys.collisionSides[2]) {
                         return;
                     }

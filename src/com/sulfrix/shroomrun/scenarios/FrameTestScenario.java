@@ -20,11 +20,11 @@ public class FrameTestScenario extends Scenario {
         world.camera = testCam;
         testEnt = new PhysicsTest(new PVector(0, -30));
         world.AddEntity(testEnt);
-        for (int o = 0; o < 500; o++) {
-            for (int i = 0; i < 1000; i++) {
+        for (int o = 0; o < 100; o++) {
+            for (int i = 0; i < 100; i++) {
                 //world.AddEntity(new Tile(new PVector(i * 30, (float) ((Math.ceil((i*5.0)/30.0)+o)*30)), "rock.png"));
                 var ent = new Tile(new PVector(i * 30, (float) ((Math.ceil((i * -5.0) / 30.0) + o + 3) * 30)), "rock.png");
-                ent.ZPos = (o + i) * -30;
+                //ent.ZPos = (o + i) * -30;
                 world.AddEntity(ent);
                 //world.AddEntity(new Tile(new PVector(i * 30, (float) ((Math.ceil((i*-5.0)/30.0)+o-2)*30)), "rock.png"));
                 //world.AddEntity(new Tile(new PVector(i * 30, o*30, -i*1), "rock.png"));

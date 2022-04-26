@@ -61,7 +61,7 @@ public class TestScenario extends Scenario {
         //testCam.position.y += input.mouseY-input.pmouseY;
         super.draw(timescale, g);
         g.pop();
-        g.line(g.width/2, 0, g.width/2, g.height);
-        g.line(0, g.height/2, g.width, g.height/2);
+        g.line(g.width/2f, 0, g.width/2f, g.height);
+        g.line(0, g.height/2f, g.width, g.height/2f);
     }
 }

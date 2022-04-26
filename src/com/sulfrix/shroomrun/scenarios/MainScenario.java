@@ -1,9 +1,7 @@
 package com.sulfrix.shroomrun.scenarios;
 
-import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.sulfur.Scenario;
 import com.sulfrix.shroomrun.entities.*;
-import com.sulfrix.shroomrun.entities.entityTypes.Damageable;
 import com.sulfrix.shroomrun.entities.ui.HUDEntity;
 import com.sulfrix.sulfur.entity.Camera;
 import com.sulfrix.sulfur.lib.GlobalManagers.Display;
@@ -12,8 +10,6 @@ import com.sulfrix.sulfur.lib.GlobalManagers.RNG;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PVector;
-
-import java.util.Arrays;
 
 public class MainScenario extends Scenario {
     public Camera camera;
@@ -41,8 +37,8 @@ public class MainScenario extends Scenario {
         player = new RunnerPlayer(new PVector(0, -30));
         world.AddEntity(player);
         camera.focus = player;
-        camera.focusDragX = 1.1;
-        camera.focusDragY = 2;
+        camera.focusDragX = 1;
+        camera.focusDragY = 1;
         camera.focusOffset = new PVector(0, -30);
         terrainGen = new TerrainGen();
         world.AddEntity(terrainGen);
@@ -86,7 +82,7 @@ public class MainScenario extends Scenario {
             g.noStroke();
             g.fill(0, 128);
             g.rect(0, 0, g.width, g.height);
-            g.translate(g.width/2, g.height/2);
+            g.translate(g.width/2f, g.height/2f);
             g.scale(scale);
             g.fill(255);
             g.textAlign(PConstants.CENTER);

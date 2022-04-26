@@ -56,9 +56,6 @@ public class ConCommand {
         if (value.equalsIgnoreCase("true")) {
             return true;
         }
-        if (getDouble(value) >= 1) {
-            return true;
-        }
-        return false;
+        return getDouble(value) >= 1;
     }
 }

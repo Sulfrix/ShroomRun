@@ -1,7 +1,6 @@
 package com.sulfrix.shroomrun.entities.item;
 
 import com.sulfrix.shroomrun.entities.Actor;
-import com.sulfrix.shroomrun.entities.RunnerPlayer;
 import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.sulfur.lib.BoundingBox;
 import com.sulfrix.sulfur.lib.GlobalManagers.AssetCache;

@@ -50,7 +50,7 @@ public class RunnerPlayer extends Actor {
         else if (velocity.y > 2 || !willJump) {
             gravityMult = 1.9;
         }
-        else if (Math.abs(velocity.y) < 2 && willJump){
+        else if (Math.abs(velocity.y) < 2){
             gravityMult = 0.5;
         }
         else{

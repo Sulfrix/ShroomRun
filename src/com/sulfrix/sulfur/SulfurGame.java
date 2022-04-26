@@ -74,8 +74,9 @@ public abstract class SulfurGame extends PApplet {
         Console.addConVar(new ConVar("cfg_autowrite", "1", "boolean", "Write config on exit."));
         Console.addConVar(new ConVar("console_pause", "0", "boolean", "Pauses the game while the console is open.").save());
         Console.addConVar(new ConVar("console_fontsize", "10", "int", "Console font size.").save());
+        Console.addConVar(new ConVar("fps_max", "300", "int", "Maximum FPS.").save());
         Console.addConVar(new ConVar("fullscreen", "0", "boolean", "Enables fullscreen. Applies at launch, saving is required.").save());
-        Console.addConVar(new ConVar("sulfur_objculling", "1", "boolean", "Deletes tiles when offscreen."));
+        Console.addConVar(new ConVar("sulfur_entculling", "1", "boolean", "Deletes tiles when offscreen."));
         Console.addConCommand(new HelpCommand());
         Console.addConCommand(new ConCommand("clear", (game, args) -> {
             game.console.lines.clear();
@@ -116,8 +117,12 @@ public abstract class SulfurGame extends PApplet {
         }, "Exit the game."));
         Console.addConCommand(new ConCommand("cfg_write", (game, args) -> {
             if (args.length > 0) {
+                int forceLevel = 0;
+                if (args.length > 1) {
+                    forceLevel = ConCommand.getInt(args[1]);
+                }
                 try {
-                    Console.writeToFile(args[0]);
+                    Console.writeToFile(args[0], forceLevel);
                 } catch (IOException e) {
                     System.out.println("Could not write. " + e);
                 }
@@ -162,6 +167,19 @@ public abstract class SulfurGame extends PApplet {
                 }
             }
         }, "Loads a scenario."));
+        Console.addConCommand(new ConCommand("ent_remove", (game, args) -> {
+            if (args.length > 0) {
+                var entName = args[0].toLowerCase();
+                var world = game.currentScenario.world;
+                var entList = world.entities;
+                for (int i = entList.size()-1; i >= 0; i--) {
+                    var ent = entList.get(i);
+                    if (ent.getClass().getSimpleName().toLowerCase().equals(entName)) {
+                        world.RemoveEntity(ent);
+                    }
+                }
+            }
+        }, "Deletes all entities of a type."));
         initConVars();
     }
 
@@ -169,7 +187,7 @@ public abstract class SulfurGame extends PApplet {
     public void exit() {
         if (Console.getConVar("cfg_autowrite").getBoolean()) {
             try {
-                Console.writeToFile("config");
+                Console.writeToFile("config", 0);
             } catch (IOException e) {
                 System.out.println("Could not write config.cfg");
             }
@@ -222,6 +240,7 @@ public abstract class SulfurGame extends PApplet {
     public abstract void gameSetup();
 
     public final void draw() {
+        frameRate(Math.max(30, Console.getConVar("fps_max").getInt()));
         background(176, 252, 255);
         ortho();
         input.update(this);

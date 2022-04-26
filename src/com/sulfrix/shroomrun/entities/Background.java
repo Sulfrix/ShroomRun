@@ -9,7 +9,7 @@ import processing.core.PVector;
 public class Background extends Entity {
 
     public float genPos = 0;
-    public float depth = 8;
+    public float depth;
 
     public static int seed;
 

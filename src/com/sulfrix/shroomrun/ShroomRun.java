@@ -18,6 +18,7 @@ public class ShroomRun extends SulfurGame {
     @Override
     public void gameSetup() {
         input.addAction(new InputAction("jump", () -> input.KeyPressed(32)).addBinding(() -> mousePressed));
+        input.addAction(new InputAction("fire", () -> input.KeyPressed(16)));
         packages.add(getClass().getPackageName());
         packages.add("com.sulfrix.shroomrun.scenarios");
         //debugInfo.components.add(new BasicText((game -> "Testing"), true));
