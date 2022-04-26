@@ -27,6 +27,8 @@ public abstract class SulfurGame extends PApplet {
     public boolean drawConsole = false;
     public float consoleAnim = 0;
 
+    public float useFrameRate = 300;
+
     public ArrayList<Double> framerateGraph = new ArrayList<>();
 
     public boolean paused;
@@ -240,7 +242,11 @@ public abstract class SulfurGame extends PApplet {
     public abstract void gameSetup();
 
     public final void draw() {
-        frameRate(Math.max(30, Console.getConVar("fps_max").getInt()));
+        int fpsConVar = Math.max(30, Console.getConVar("fps_max").getInt());
+        if (fpsConVar != useFrameRate) {
+            frameRate(fpsConVar);
+            useFrameRate = fpsConVar;
+        }
         background(176, 252, 255);
         ortho();
         input.update(this);
