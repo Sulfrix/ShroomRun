@@ -1,9 +1,13 @@
 package com.sulfrix.shroomrun.entities;
 
 import com.sulfrix.shroomrun.entities.item.Item;
+import com.sulfrix.shroomrun.entities.item.TestItem;
 import com.sulfrix.sulfur.debug.console.Console;
+import com.sulfrix.sulfur.lib.BoundingBox;
 import com.sulfrix.sulfur.lib.animation.AnimatedSprite;
 import processing.core.PVector;
+
+import java.util.Random;
 
 public class RunnerPlayer extends Actor {
 
@@ -15,10 +19,12 @@ public class RunnerPlayer extends Actor {
 
     public RunnerPlayer(PVector pos) {
         super(pos);
+        boundingBox.width = 18;
         sprite = new AnimatedSprite(30, 30, "shroom.png");
         sprite.addSequence("running", 0.035f, new int[] {0, 1, 2, 1}, true);
         sprite.addSequence("jump", 0.25f, new int[] {0}, false);
         sprite.addSequence("fall", 0.35f, new int[] {0}, false);
+        equip(new TestItem(position.copy()));
     }
 
     @Override
@@ -30,6 +36,15 @@ public class RunnerPlayer extends Actor {
         if (velocity.y > terminalVelocity) {
             velocity.y = terminalVelocity;
         }
+        if (health <= 0) {
+            renderingEnabled = false;
+        }
+    }
+
+    public void gib() {
+        Random rand = new Random();
+        PVector pos = new PVector(position.x+(rand.nextFloat(30)-15), position.y+(rand.nextFloat(30)-15));
+        world.AddEntity(new ShroomGib(pos));
     }
 
     public void JumpLogic(double timescale) {
@@ -64,6 +79,9 @@ public class RunnerPlayer extends Actor {
     }
 
     void MoveForward(double timescale) {
+        if (stunned) {
+            return;
+        }
         var moveSpeed = Console.getConVar("shroom_movespeed").getDouble();
         if (health > 0) {
             if (velocity.x < moveSpeed) {

@@ -15,6 +15,7 @@ public abstract class Entity {
     public BoundingBox boundingBox;
     public RenderPosType renderPosType = RenderPosType.WORLD_SPACE;
     public UUID uuid;
+    public double timeCreated = 0;
 
     public boolean queueRemove = false;
 
@@ -23,6 +24,7 @@ public abstract class Entity {
 
     public World world;
     // focused entities receive player input from World
+    // no they dont
     public boolean isFocused;
 
     public boolean OBBCenter = true;
@@ -33,7 +35,8 @@ public abstract class Entity {
     public boolean renderingOffscreen = false;
     public boolean updateOffscreen = true;
 
-    public boolean removeOffscreen = false; // Despite saying "offscreen," this actuall refers to when an entity leaves the screen on the left side.
+    public boolean removeOffscreen = false; // Despite saying "offscreen", this actually refers to when an entity leaves the screen on the left side.
+
 
     public Entity(PVector pos, BoundingBox bb) {
         position = pos;
@@ -51,6 +54,11 @@ public abstract class Entity {
         position = new PVector(0, 0);
         boundingBox = new BoundingBox(0, 0);
         genUUID();
+    }
+
+    public static Entity createFromConsole(PVector pos, String[] args) {
+        System.out.println("Error: cannot create entity from console");
+        return null;
     }
 
     void genUUID() {

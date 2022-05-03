@@ -1,5 +1,6 @@
 package com.sulfrix.shroomrun.entities;
 
+import com.sulfrix.shroomrun.entities.entityTypes.DamageInfo;
 import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.shroomrun.entities.entityTypes.DamageTeam;
 import com.sulfrix.shroomrun.entities.entityTypes.Damageable;
@@ -17,6 +18,7 @@ public class Hazard extends Entity {
     public String texture;
     PImage texImg;
     HashSet<Entity> hasCollided = new HashSet<>();
+    public double lastDamage = 0;
 
     public Hazard(PVector pos, String tex) {
         super(pos);
@@ -46,6 +48,9 @@ public class Hazard extends Entity {
     @Override
     public void collide(Entity source) {
         super.collide(source);
+        if (world.time < lastDamage+10) {
+            return;
+        }
         if (source instanceof Damageable) {
             if (!hasCollided.contains(source)) {
                 if (source instanceof PhysicsEntity phys) {
@@ -54,8 +59,13 @@ public class Hazard extends Entity {
                     }
                 }
                 var dmg = (Damageable)source;
-                dmg.damage(DamageTeam.ENEMY, 10, this);
+                var dmginfo = new DamageInfo(10, DamageTeam.ENEMY, new PVector(0, 0), this, this, source);
+                dmginfo.type = "hazard";
+                dmg.damage(dmginfo);
+
                 hasCollided.add(source);
+                lastDamage = world.time;
+
             }
         }
 

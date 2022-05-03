@@ -1,18 +1,24 @@
 package com.sulfrix.shroomrun.entities;
 
-import com.sulfrix.shroomrun.entities.entityTypes.DamageTeam;
+import com.sulfrix.shroomrun.entities.entityTypes.DamageInfo;
 import com.sulfrix.shroomrun.entities.entityTypes.Damageable;
 import com.sulfrix.shroomrun.entities.item.Item;
-import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.sulfur.entity.PhysicsEntity;
 import com.sulfrix.sulfur.lib.BoundingBox;
 import com.sulfrix.sulfur.lib.animation.AnimatedSprite;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
+import java.util.Random;
+
 public class Actor extends PhysicsEntity implements Damageable {
 
     public float health = 100f;
+
+    public float kbMult = 1;
+    public float kbUp = 1.2f;
+    public boolean stunned = false;
+    public float stunTimer = 0f;
 
     Item currentItem;
 
@@ -20,6 +26,7 @@ public class Actor extends PhysicsEntity implements Damageable {
 
     public Actor(PVector pos) {
         super(pos, new BoundingBox(30, 30));
+        OBBCenter = false;
         renderingEnabled = true;
         collisionEnabled = true;
         ZPos = 1;
@@ -32,6 +39,16 @@ public class Actor extends PhysicsEntity implements Damageable {
         UpdateSprite(timescale);
         if (currentItem != null) {
             currentItem.updateHeld(timescale);
+        }
+        if (collisionSides[2]) {
+            if (stunTimer <= 0) {
+                stunned = false;
+            }
+        }
+        if (stunTimer > 0) {
+            stunTimer -= timescale;
+        } else {
+            stunTimer = 0;
         }
     }
 
@@ -57,19 +74,45 @@ public class Actor extends PhysicsEntity implements Damageable {
 
     @Override
     public void draw(double timescale, PGraphics g) {
-        sprite.draw(g, 0, 0);
+        if (stunned) {
+            if (stunTimer <= 0) {
+                g.tint(230);
+            } else {
+                g.tint(255, 200, 200);
+            }
+        }
+        sprite.draw(g, -15, -15);
         if (currentItem != null) {
             currentItem.drawHeld(timescale, g);
         }
     }
 
     @Override
-    public boolean damage(DamageTeam team, float amount, Entity source) {
-        if (team != this.team) {
-            health -= amount;
-            velocity.x = 0;
+    public boolean damage(DamageInfo dmgInfo) {
+        if (dmgInfo.team != this.team) {
+            health -= dmgInfo.damage;
+            velocity.add(PVector.mult(dmgInfo.force, kbMult));
+            for (int i = 0; i < dmgInfo.damage/3; i++) {
+                gib();
+            }
+            if (dmgInfo.type.equals("hazard")) {
+                velocity.x = 0;
+            } else {
+                velocity.y -= kbUp;
+            }
+            if (dmgInfo.force.mag() > 2) {
+                stun(10);
+            }
+            return true;
         }
-        return true;
+        return false;
+    }
+
+    public void gib() {}
+
+    public void stun(float time) {
+        stunTimer += time;
+        stunned = true;
     }
 
     public void equip(Item item) {

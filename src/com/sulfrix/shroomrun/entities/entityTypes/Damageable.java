@@ -5,7 +5,7 @@ import com.sulfrix.sulfur.entity.Entity;
 public interface Damageable {
     DamageTeam team = DamageTeam.PLAYER;
 
-    boolean damage(DamageTeam team, float amount, Entity source);
+    boolean damage(DamageInfo dmgInfo);
     void setHealth(float hp);
     float getHealth();
 }

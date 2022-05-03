@@ -47,6 +47,8 @@ public abstract class Item extends Entity {
 
     public void equip(Actor ent) {
         holder = ent;
-        remove();
+        if (this.world != null) {
+            remove();
+        }
     }
 }

@@ -104,6 +104,5 @@ public class ConVar {
     public void setValue(String value) {
         this.value = value;
         cacheValid = false;
-        //System.out.println("Convar " + name + " written to " + value);
     }
 }

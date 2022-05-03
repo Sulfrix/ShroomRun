@@ -3,6 +3,8 @@ package com.sulfrix.sulfur.entity;
 import com.sulfrix.sulfur.lib.BoundingBox;
 import processing.core.PVector;
 
+import java.util.function.Predicate;
+
 public abstract class PhysicsEntity extends Entity {
 
     public double gravityMult = 1.0;
@@ -11,6 +13,9 @@ public abstract class PhysicsEntity extends Entity {
      * clock-wise, which sides have a collision
      */
     public boolean[] collisionSides = {false, false, false, false};
+
+    public Predicate<Entity> ignoreCollision;
+    public float bounciness = 0;
 
     public PhysicsEntity(PVector pos, BoundingBox bb) {
         super(pos, bb);
@@ -36,7 +41,7 @@ public abstract class PhysicsEntity extends Entity {
     void DoCollision(double timescale) {
         for (Entity e : world.entities) {
             if (e != this) {
-                if (e.collisionEnabled) {
+                if (e.collisionEnabled && (ignoreCollision == null || !ignoreCollision.test(e))) {
                     if (velocity.y != 0) {
                         int vertSign = 1;
                         if (velocity.y < 0) {
@@ -48,7 +53,11 @@ public abstract class PhysicsEntity extends Entity {
 
                         // vertical
                         if (BoundingBox.touching(bb, pos, e.boundingBox, e.position)) {
-                            velocity.y = 0;
+                            if (bounciness > 0 && Math.abs(velocity.y) > 1) {
+                                velocity.y *= -bounciness;
+                            } else {
+                                velocity.y = 0;
+                            }
                             if (vertSign == 1) {
                                 collisionSides[2] = true;
                                 position.y = e.position.y - (e.boundingBox.height / 2 + boundingBox.height / 2);
@@ -57,7 +66,7 @@ public abstract class PhysicsEntity extends Entity {
                                 position.y = e.position.y + (e.boundingBox.height / 2 + boundingBox.height / 2);
                             }
                             e.collide(this);
-
+                            onCollide(e);
 
                         } else {
                             collisionSides[2] = false;
@@ -77,7 +86,11 @@ public abstract class PhysicsEntity extends Entity {
 
                         // horizontal
                         if (BoundingBox.touching(bb, pos, e.boundingBox, e.position)) {
-                            velocity.x = 0;
+                            if (bounciness > 0 && Math.abs(velocity.x) > 0.05) {
+                                velocity.x *= -bounciness;
+                            } else {
+                                velocity.x = 0;
+                            }
                             if (horizSign == 1) {
                                 collisionSides[1] = true;
                                 position.x = e.position.x - (e.boundingBox.width / 2 + boundingBox.width / 2);
@@ -86,6 +99,7 @@ public abstract class PhysicsEntity extends Entity {
                                 position.x = e.position.x + (e.boundingBox.width / 2 + boundingBox.width / 2);
                             }
                             e.collide(this);
+                            onCollide(e);
                             break;
                         } else {
                             collisionSides[1] = false;
@@ -95,12 +109,15 @@ public abstract class PhysicsEntity extends Entity {
                 } else if (e.isTrigger) {
                     if (BoundingBox.touching(boundingBox, position, e.boundingBox, e.position)) {
                         e.collide(this);
+                        onCollide(e);
                     }
                 }
 
             }
         }
     }
+
+    protected void onCollide(Entity otherEnt) {}
 
     void ApplyVelocity(double timescale) {
         position.add(PVector.mult(velocity, (float) timescale));

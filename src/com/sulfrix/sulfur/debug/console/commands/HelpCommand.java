@@ -18,8 +18,8 @@ public class HelpCommand extends ConCommand {
             String[] convarArr = Console.convars.keySet().toArray(new String[0]);
             Arrays.sort(convarArr);
             for (String name : convarArr) {
-                //System.out.println(name);
-                Console.runCommand(name);
+                System.out.println(name);
+                //Console.runCommand(name);
             }
             System.out.println("\nValid commands: ");
             String[] commandArr = Console.concommands.keySet().toArray(new String[0]);

@@ -43,7 +43,7 @@ public class World {
                 if (e.updateEnabled) {
                     e.update(timescale * globalTimescale);
                 }
-                if (Console.getConVar("sulfur_entculling").getBoolean() && e.removeOffscreen && cambb.boxIsLeftOf(e.boundingBox, e.position, camera.position)) {
+                if (Console.getConVar("ent_culling").getBoolean() && e.removeOffscreen && cambb.boxIsLeftOf(e.boundingBox, e.position, camera.position)) {
                     RemoveEntity(e);
                 }
             }
@@ -73,8 +73,9 @@ public class World {
 
     public void draw(double timescale, PGraphics g) {
         renderedEnts = 0;
+        var doCulling = Console.getConVar("ent_culling").getBoolean();
         for (Entity e : entities) {
-            if ((EntOnscreen(e) || e.renderingOffscreen) && e.renderingEnabled) {
+            if ((!doCulling || e.renderingOffscreen || EntOnscreen(e)) && e.renderingEnabled) {
                 DrawEntity(e, timescale * globalTimescale, g);
                 renderedEnts++;
             }
@@ -96,6 +97,7 @@ public class World {
         } else {
             entities.add(ent);
         }
+        ent.timeCreated = time;
 
         return ent;
     }

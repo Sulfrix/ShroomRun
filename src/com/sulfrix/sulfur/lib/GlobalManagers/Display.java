@@ -10,7 +10,7 @@ public abstract class Display extends GlobalManager {
         double oH = owner.height;
         double ratio1 = tW/tH;
         double ratio2 = oW/oH;
-        double outputScale = 1;
+        double outputScale;
         if (ratio1 > ratio2) {
             outputScale = oW/tW;
         } else {

@@ -1,5 +1,7 @@
 package com.sulfrix.shroomrun.scenarios;
 
+import com.sulfrix.shroomrun.entities.entityTypes.DamageInfo;
+import com.sulfrix.shroomrun.entities.entityTypes.DamageTeam;
 import com.sulfrix.sulfur.Scenario;
 import com.sulfrix.shroomrun.entities.*;
 import com.sulfrix.shroomrun.entities.ui.HUDEntity;
@@ -57,12 +59,15 @@ public class MainScenario extends Scenario {
 
         if (world.time > 2) {
             if (player.position.y > ((terrainGen.genY+20)*30)) {
-                player.setHealth(0);
+                if (player.health > 0) {
+                    player.damage(new DamageInfo(100, DamageTeam.ENEMY, new PVector(0, 0), null, null, player));
+                }
             }
             if (player.getHealth() <= 0 && !gameOver) {
                 score.setScore();
                 gameOver = true;
                 camera.focus = null;
+
             }
             if (gameOver) {
                 if (input.getActionPressed("jump")) {

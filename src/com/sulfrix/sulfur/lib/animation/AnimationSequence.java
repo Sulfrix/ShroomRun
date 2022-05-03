@@ -33,9 +33,9 @@ public class AnimationSequence {
 
     public PImage getCurrent() {
         if (loop) {
-            return frames[(int)timer%frames.length];
+            return frames[Math.abs((int)timer%frames.length)];
         } else {
-            return frames[(int)Math.min(timer, frames.length-1)];
+            return frames[Math.abs((int)Math.min(timer, frames.length-1))];
         }
 
     }

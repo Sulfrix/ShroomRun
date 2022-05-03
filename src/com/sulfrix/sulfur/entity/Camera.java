@@ -1,5 +1,6 @@
 package com.sulfrix.sulfur.entity;
 
+import com.sulfrix.sulfur.debug.console.Console;
 import com.sulfrix.sulfur.lib.BoundingBox;
 import com.sulfrix.sulfur.lib.GlobalManagers.Display;
 import processing.core.PGraphics;
@@ -33,6 +34,10 @@ public class Camera extends Entity {
     }
 
     public double getScale() {
+        var forcescale = Console.getConVar("cam_forcescale").getDouble();
+        if (forcescale > 0) {
+            return forcescale;
+        }
         if (useOptimalScale) {
             return Display.getOptimalScale(480, 360)*zoom;
         } else {

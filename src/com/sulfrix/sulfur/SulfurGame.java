@@ -8,6 +8,7 @@ import com.sulfrix.sulfur.debug.InfoComponent;
 import com.sulfrix.sulfur.debug.components.BasicText;
 import com.sulfrix.sulfur.debug.components.FPS;
 import com.sulfrix.sulfur.debug.console.commands.HelpCommand;
+import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.sulfur.lib.GlobalManagers.*;
 import com.sulfrix.sulfur.lib.input.Input;
 import processing.core.PApplet;
@@ -26,8 +27,7 @@ public abstract class SulfurGame extends PApplet {
     public boolean frameGraph = false;
     public boolean drawConsole = false;
     public float consoleAnim = 0;
-
-    public float useFrameRate = 300;
+    public int maxFrameRate = 0;
 
     public ArrayList<Double> framerateGraph = new ArrayList<>();
 
@@ -69,16 +69,20 @@ public abstract class SulfurGame extends PApplet {
             System.out.println("Could not read config.cfg" + e);
         }
         packages.add("com.sulfrix.sulfur");
+        packages.add("com.sulfrix.sulfur.entity");
     }
 
     private void engineInitConVars() {
-        Console.addConVar(new ConVar("sulfur_timescale", "1", "double", "Multiply time by this value."));
+        Console.addConVar(new ConVar("timescale", "1", "double", "Multiply time by this value."));
         Console.addConVar(new ConVar("cfg_autowrite", "1", "boolean", "Write config on exit."));
         Console.addConVar(new ConVar("console_pause", "0", "boolean", "Pauses the game while the console is open.").save());
         Console.addConVar(new ConVar("console_fontsize", "10", "int", "Console font size.").save());
         Console.addConVar(new ConVar("fps_max", "300", "int", "Maximum FPS.").save());
         Console.addConVar(new ConVar("fullscreen", "0", "boolean", "Enables fullscreen. Applies at launch, saving is required.").save());
-        Console.addConVar(new ConVar("sulfur_entculling", "1", "boolean", "Deletes tiles when offscreen."));
+        Console.addConVar(new ConVar("ent_culling", "1", "boolean", "Deletes tiles when offscreen."));
+        Console.addConVar(new ConVar("rng_setseed", "0", "int", "When != 0, sets the seed for RNG to use."));
+        Console.addConVar(new ConVar("cam_forcescale", "0", "float", "Forces the camera to scale to this value. (when nonzero)"));
+        Console.addConVar(new ConVar("cam_debugscale", "1", "float", "Scales everything, shows outside camera bounds."));
         Console.addConCommand(new HelpCommand());
         Console.addConCommand(new ConCommand("clear", (game, args) -> {
             game.console.lines.clear();
@@ -242,17 +246,22 @@ public abstract class SulfurGame extends PApplet {
     public abstract void gameSetup();
 
     public final void draw() {
-        int fpsConVar = Math.max(30, Console.getConVar("fps_max").getInt());
-        if (fpsConVar != useFrameRate) {
-            frameRate(fpsConVar);
-            useFrameRate = fpsConVar;
+        var fpsconvar = Math.max(30, Console.getConVar("fps_max").getInt());
+
+        if (fpsconvar != maxFrameRate) {
+            frameRate(fpsconvar);
+            maxFrameRate = fpsconvar;
         }
         background(176, 252, 255);
+        g.push();
+        var debugscale = Console.getConVar("cam_debugscale").getFloat();
+        g.translate((width-(width*debugscale))/2, (height-(height*debugscale))/2);
+        g.scale(debugscale);
         ortho();
         input.update(this);
         if (!paused) {
             var ts = TimeManager.calcTimesteps();
-            var timescale = Console.getConVar("sulfur_timescale").getDouble();
+            var timescale = Console.getConVar("timescale").getDouble();
             for (int step = 0; step < ts.timesteps; step++) {
                 currentScenario.update(ts.deltaTimePerStep*timescale);
                 instanceTime += ts.deltaTimePerStep*timescale;
@@ -260,6 +269,7 @@ public abstract class SulfurGame extends PApplet {
         }
 
         currentScenario.draw(TimeManager.deltaTime, g);
+        g.pop();
         drawDebugText();
 
         if (frameGraph) {

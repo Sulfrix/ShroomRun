@@ -1,5 +1,6 @@
 package com.sulfrix.sulfur.lib.GlobalManagers;
 
+import com.sulfrix.sulfur.debug.console.Console;
 import processing.core.PApplet;
 
 import java.util.Random;
@@ -43,6 +44,11 @@ public abstract class RNG extends GlobalManager {
     }
 
     public static void Scramble() {
-        SetSeed(new Random().nextInt());
+        int definedSeed = Console.getConVar("rng_setseed").getInt();
+        if (definedSeed == 0) {
+            SetSeed(new Random().nextInt());
+        } else {
+            SetSeed(definedSeed);
+        }
     }
 }
