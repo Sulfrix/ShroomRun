@@ -59,7 +59,7 @@ public class Hazard extends Entity {
                     }
                 }
                 var dmg = (Damageable)source;
-                var dmginfo = new DamageInfo(10, DamageTeam.ENEMY, new PVector(0, 0), this, this, source);
+                var dmginfo = new DamageInfo(10, DamageTeam.ENEMY, new PVector(-15, 0), this, this, source);
                 dmginfo.type = "hazard";
                 dmg.damage(dmginfo);
 

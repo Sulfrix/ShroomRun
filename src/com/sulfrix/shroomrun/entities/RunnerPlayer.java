@@ -22,6 +22,7 @@ public class RunnerPlayer extends Actor {
         boundingBox.width = 18;
         sprite = new AnimatedSprite(30, 30, "shroom.png");
         sprite.addSequence("running", 0.035f, new int[] {0, 1, 2, 1}, true);
+        sprite.addSequence("standing", 0, new int[] {1}, false);
         sprite.addSequence("jump", 0.25f, new int[] {0}, false);
         sprite.addSequence("fall", 0.35f, new int[] {0}, false);
         equip(new TestItem(position.copy()));

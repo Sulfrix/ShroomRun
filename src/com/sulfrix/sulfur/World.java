@@ -4,21 +4,22 @@ import com.sulfrix.sulfur.debug.console.Console;
 import com.sulfrix.sulfur.entity.Camera;
 import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.EntityLayer;
 import com.sulfrix.sulfur.lib.GlobalManagers.Display;
 import com.sulfrix.sulfur.lib.input.Input;
 import com.sulfrix.sulfur.lib.RenderPosType;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 public class World {
     public double globalTimescale = 1;
     public double gravity = 1.2;
 
-    public ArrayList<Entity> entities;
-    private ArrayList<Entity> pendingAdd = new ArrayList<>();
+    @Deprecated
+    public List<Entity> entities;
+    private List<Entity> pendingAdd = new ArrayList<>();
     private boolean queueSort;
     private boolean isUpdating;
     public Camera camera;
@@ -26,12 +27,15 @@ public class World {
 
     public double time;
 
+    public HashMap<String, EntityLayer> layers;
+
     public int renderedEnts;
 
     public boolean updateEnabled = true;
 
     public World() {
-        entities = new ArrayList<>();
+        entities = new LinkedList<>();
+        AddLayer(new EntityLayer("default"));
     }
 
     public void update(double timescale) {
@@ -39,8 +43,8 @@ public class World {
             isUpdating = true;
             // unmodifiable list used in case an entity is deleted in the middle of an update() loop
             var cambb = camera.getBB();
-            for (Entity e : Collections.unmodifiableList(entities)) {
-                if (e.updateEnabled) {
+            for (Entity e : entities) {
+                if (e.updateEnabled && (e.updateOffscreen || e.onScreen)) {
                     e.update(timescale * globalTimescale);
                 }
                 if (Console.getConVar("ent_culling").getBoolean() && e.removeOffscreen && cambb.boxIsLeftOf(e.boundingBox, e.position, camera.position)) {
@@ -82,8 +86,7 @@ public class World {
         }
     }
 
-    public Entity AddEntity(Entity ent, Entity related) {
-        ent.related = related;
+    public Entity AddEntity(Entity ent, String layer) {
         if (isUpdating) {
             pendingAdd.add(ent);
             return ent;
@@ -107,10 +110,6 @@ public class World {
         queueSort = true;
     }
 
-    public Entity AddEntity(Entity ent) {
-        return AddEntity(ent, null);
-    }
-
     public void RemoveEntity(Entity ent) {
         if (isUpdating) {
             ent.queueRemove = true;
@@ -119,6 +118,14 @@ public class World {
             entities.remove(ent);
         }
 
+    }
+
+    public void AddLayer(EntityLayer layer) {
+        layers.put(layer.name, layer);
+    }
+
+    public EntityLayer GetLayer(String layerName) {
+        return layers.get(layerName);
     }
 
     public void DrawEntity(Entity entity, double timescale, PGraphics g) {
@@ -146,7 +153,7 @@ public class World {
             PVector camPos = CameraPos();
             //g.translate(-camPos.x + (g.width / 2) + entity.position.x, -camPos.y + (g.height / 2) + entity.position.y);
             g.translate((float) (-camPos.x * camera.getScale()) / (float) entity.parallax, (float) (-camPos.y * camera.getScale()) / (float) entity.parallax);
-            g.translate(g.width / 2, g.height / 2);
+            g.translate(g.width / 2f, g.height / 2f);
             g.scale((float) camera.getScale());
             //g.translate(entity.position.x*(float)entity.parallax, entity.position.y*(float)entity.parallax, entity.ZPos);
             g.translate(entity.position.x / (float) entity.parallax, entity.position.y / (float) entity.parallax, entity.ZPos*10);
@@ -177,12 +184,14 @@ public class World {
     public boolean EntOnscreen(Entity ent) {
 
         if (ent.renderPosType == RenderPosType.SCREEN_SPACE || ent.parallax != 1) {
+            ent.onScreen = true;
             return true;
         } else {
             var w = (float) (Display.width() * (1 / camera.getScale())) + 0;
             var h = (float) (Display.height() * (1 / camera.getScale())) + 0;
             //return ent.touching(new BoundingBox(w, h), PVector.sub(CameraPos(), new PVector(w/2, h/2)));
-            return ent.touching(new BoundingBox(w, h), CameraPos());
+            ent.onScreen = ent.touching(new BoundingBox(w, h), CameraPos());
+            return ent.onScreen;
         }
     }
 }

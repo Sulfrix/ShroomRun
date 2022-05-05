@@ -2,6 +2,7 @@ package com.sulfrix.sulfur.entity;
 
 import com.sulfrix.sulfur.World;
 import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.EntityLayer;
 import com.sulfrix.sulfur.lib.RenderPosType;
 import processing.core.*;
 
@@ -14,6 +15,7 @@ public abstract class Entity {
     public float ZPos = 0;
     public BoundingBox boundingBox;
     public RenderPosType renderPosType = RenderPosType.WORLD_SPACE;
+    public boolean onScreen = true;
     public UUID uuid;
     public double timeCreated = 0;
 
@@ -23,9 +25,7 @@ public abstract class Entity {
     public Entity related;
 
     public World world;
-    // focused entities receive player input from World
-    // no they dont
-    public boolean isFocused;
+    public EntityLayer layer;
 
     public boolean OBBCenter = true;
     public boolean collisionEnabled = false;

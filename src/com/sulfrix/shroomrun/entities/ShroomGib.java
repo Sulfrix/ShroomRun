@@ -44,8 +44,8 @@ public class ShroomGib extends PhysicsEntity {
         super.update(timescale);
         if (collisionSides[2]) {
             sprite = atlas.images[3];
-            //updateEnabled = false;
-            velocity.x -= (velocity.x/1.01)*timescale;
+            updateEnabled = false;
+            //velocity.x -= (velocity.x/1.01)*timescale;
         }
     }
 }

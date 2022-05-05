@@ -372,11 +372,11 @@ public abstract class SulfurGame extends PApplet {
         input.ReleaseKey(event.getKeyCode());
     }
 
-    public static final Class<?> findClassByName(String classname, String[] searchPackages) {
-        for(int i=0; i<searchPackages.length; i++){
-            try{
-                return Class.forName(searchPackages[i] + "." + classname);
-            } catch (ClassNotFoundException e){
+    public static Class<?> findClassByName(String classname, String[] searchPackages) {
+        for (String searchPackage : searchPackages) {
+            try {
+                return Class.forName(searchPackage + "." + classname);
+            } catch (ClassNotFoundException e) {
                 //not in this package, try another
             }
         }

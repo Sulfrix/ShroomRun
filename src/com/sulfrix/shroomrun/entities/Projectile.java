@@ -14,10 +14,16 @@ public class Projectile extends PhysicsEntity {
     public float damage;
     public DamageTeam damageTeam;
     public Entity owner;
+    public double lifetime;
+    public double maxLifetime;
 
-    public Projectile(PVector pos, float size, PVector velocity, float damage, DamageTeam damageTeam, Entity owner) {
+    public int hits = 0;
+
+    public Projectile(PVector pos, float size, double lifetime, PVector velocity, float damage, DamageTeam damageTeam, Entity owner) {
         super(pos, new BoundingBox(size, size));
         OBBCenter = false;
+        this.lifetime = lifetime;
+        this.maxLifetime = lifetime;
         this.velocity = velocity;
         this.gravityMult = 0;
         this.damage = damage;
@@ -26,11 +32,16 @@ public class Projectile extends PhysicsEntity {
         collisionEnabled = false;
         renderingEnabled = true;
         updateEnabled = true;
+        ignoreCollision = entity -> entity == owner;
     }
 
     @Override
     public void update(double timescale) {
         super.update(timescale);
+        lifetime -= timescale;
+        if (lifetime <= 0) {
+            remove();
+        }
     }
 
     @Override
@@ -40,14 +51,13 @@ public class Projectile extends PhysicsEntity {
 
     @Override
     protected void onCollide(Entity otherEnt) {
-        if (world.time - timeCreated < 10) {
-            if (otherEnt instanceof Damageable dmg) {
-                DamageInfo info = new DamageInfo(damage, damageTeam, velocity, owner, this, otherEnt);
-                boolean result = dmg.damage(info);
-                if (result) {
-                    remove();
-                }
-            } else remove();
+        remove();
+        if (hits == 0 && otherEnt instanceof Damageable dmg) {
+            DamageInfo info = new DamageInfo(damage, damageTeam, velocity.copy(), owner, this, otherEnt);
+            info.type = "projectile";
+            boolean result = dmg.damage(info);
+            collisionEnabled = false;
+            hits ++;
         }
     }
 }

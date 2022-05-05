@@ -1,6 +1,7 @@
 package com.sulfrix.shroomrun.entities;
 
 import com.sulfrix.shroomrun.entities.entityTypes.DamageInfo;
+import com.sulfrix.shroomrun.entities.entityTypes.DamageTeam;
 import com.sulfrix.shroomrun.entities.entityTypes.Damageable;
 import com.sulfrix.shroomrun.entities.item.Item;
 import com.sulfrix.sulfur.entity.PhysicsEntity;
@@ -14,6 +15,8 @@ import java.util.Random;
 public class Actor extends PhysicsEntity implements Damageable {
 
     public float health = 100f;
+
+    public DamageTeam team = DamageTeam.PLAYER;
 
     public float kbMult = 1;
     public float kbUp = 1.2f;
@@ -50,13 +53,20 @@ public class Actor extends PhysicsEntity implements Damageable {
         } else {
             stunTimer = 0;
         }
+        if (health <= 0) {
+            collisionEnabled = false;
+        }
     }
 
     public void UpdateSprite(double timescale) {
         if (collisionSides[2]) {
-            if (!sprite.currentAnimationName.equals("running")) {
-                sprite.switchAnimation("running");
-                sprite.setTimer(1.5f);
+            if (Math.abs(velocity.x) > 0.01) {
+                if (!sprite.currentAnimationName.equals("running")) {
+                    sprite.switchAnimation("running");
+                    sprite.setTimer(1.5f);
+                }
+            } else {
+                sprite.switchAnimation("standing");
             }
             sprite.progress(velocity.x*(float)timescale);
         } else {
@@ -68,7 +78,6 @@ public class Actor extends PhysicsEntity implements Damageable {
 
             sprite.progress((float)timescale);
         }
-
     }
 
 
@@ -92,11 +101,13 @@ public class Actor extends PhysicsEntity implements Damageable {
         if (dmgInfo.team != this.team) {
             health -= dmgInfo.damage;
             velocity.add(PVector.mult(dmgInfo.force, kbMult));
+            System.out.println(dmgInfo.force);
             for (int i = 0; i < dmgInfo.damage/3; i++) {
                 gib();
             }
             if (dmgInfo.type.equals("hazard")) {
                 velocity.x = 0;
+                System.out.println("x negated");
             } else {
                 velocity.y -= kbUp;
             }
@@ -126,5 +137,9 @@ public class Actor extends PhysicsEntity implements Damageable {
 
     public float getHealth() {
         return health;
+    }
+
+    public DamageTeam getTeam() {
+        return team;
     }
 }

@@ -58,7 +58,7 @@ public class HUDEntity extends Entity {
         g.fill(0, 127);
         g.rect(0, 0, hpBarWide, hpBarThick, hpBarThick);
         g.fill(30, 255, 60);
-        g.rect(0, 0, hpBarWide*(player.health/100f), hpBarThick, hpBarThick);
+        g.rect(0, 0, hpBarWide*Math.max(0, player.health/100f), hpBarThick, hpBarThick);
         g.pop();
         g.pop();
     }

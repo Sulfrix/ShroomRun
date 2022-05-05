@@ -53,6 +53,8 @@ public abstract class PhysicsEntity extends Entity {
 
                         // vertical
                         if (BoundingBox.touching(bb, pos, e.boundingBox, e.position)) {
+                            e.collide(this);
+                            onCollide(e);
                             if (bounciness > 0 && Math.abs(velocity.y) > 1) {
                                 velocity.y *= -bounciness;
                             } else {
@@ -65,8 +67,6 @@ public abstract class PhysicsEntity extends Entity {
                                 collisionSides[0] = true;
                                 position.y = e.position.y + (e.boundingBox.height / 2 + boundingBox.height / 2);
                             }
-                            e.collide(this);
-                            onCollide(e);
 
                         } else {
                             collisionSides[2] = false;
@@ -86,6 +86,8 @@ public abstract class PhysicsEntity extends Entity {
 
                         // horizontal
                         if (BoundingBox.touching(bb, pos, e.boundingBox, e.position)) {
+                            e.collide(this);
+                            onCollide(e);
                             if (bounciness > 0 && Math.abs(velocity.x) > 0.05) {
                                 velocity.x *= -bounciness;
                             } else {
@@ -98,8 +100,6 @@ public abstract class PhysicsEntity extends Entity {
                                 collisionSides[3] = true;
                                 position.x = e.position.x + (e.boundingBox.width / 2 + boundingBox.width / 2);
                             }
-                            e.collide(this);
-                            onCollide(e);
                             break;
                         } else {
                             collisionSides[1] = false;

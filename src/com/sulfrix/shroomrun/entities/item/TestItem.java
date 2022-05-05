@@ -1,5 +1,6 @@
 package com.sulfrix.shroomrun.entities.item;
 
+import com.sulfrix.shroomrun.entities.Projectile;
 import com.sulfrix.sulfur.lib.animation.AtlasSprite;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -14,7 +15,11 @@ public class TestItem extends Item {
 
     @Override
     public void updateHeld(double timescale) {
-
+        if (holder.world.input.getActionPressed("fire") && holder.world.time > lastShot+5) {
+            var proj = new Projectile(holder.position.copy(), 10, 30, new PVector(20, 0), 34, holder.team, holder);
+            holder.world.AddEntity(proj);
+            lastShot = holder.world.time;
+        }
     }
 
     @Override

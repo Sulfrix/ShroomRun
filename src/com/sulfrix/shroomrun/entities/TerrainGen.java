@@ -30,7 +30,7 @@ public class TerrainGen extends Entity {
     }
 
     public void generate() {
-        var h = 20;
+        var h = 10;
         if (offset == 0) {
             generateBlock(24, h, 0, genY, 0);
             genX += 24;
@@ -73,7 +73,8 @@ public class TerrainGen extends Entity {
         for (int h = 0; h < hazards; h++) {
             var hazardX = RNG.RandomInt(2, width-2, offset);
             offset++;
-            var hazard = new Hazard(new PVector((baseX + hazardX)*30, (baseY-1)*30), "spikes.png");
+            //var hazard = new Hazard(new PVector((baseX + hazardX)*30, (baseY-1)*30), "spikes.png");
+            var hazard = new Enemy(new PVector((baseX + hazardX)*30, (baseY-2)*30));
             world.AddEntity(hazard);
         }
     }
