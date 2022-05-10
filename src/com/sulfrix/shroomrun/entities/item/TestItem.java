@@ -16,8 +16,8 @@ public class TestItem extends Item {
     @Override
     public void updateHeld(double timescale) {
         if (holder.world.input.getActionPressed("fire") && holder.world.time > lastShot+5) {
-            var proj = new Projectile(holder.position.copy(), 10, 30, new PVector(20, 0), 34, holder.team, holder);
-            holder.world.AddEntity(proj);
+            var proj = new Projectile(holder.position.copy(), 10, 30, new PVector(10, 0).add(holder.velocity), 34, holder.team, holder);
+            holder.world.AddEntity(proj, "util");
             lastShot = holder.world.time;
         }
     }

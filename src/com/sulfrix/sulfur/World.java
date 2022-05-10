@@ -33,9 +33,18 @@ public class World {
 
     public boolean updateEnabled = true;
 
+    public String[] layerOrder;
+
     public World() {
         entities = new LinkedList<>();
+        layers = new HashMap<>();
         AddLayer(new EntityLayer("default"));
+        var ndLayer = new EntityLayer("nodraw");
+        ndLayer.drawEnabled = false;
+        AddLayer(ndLayer);
+        var guilayer = new EntityLayer("gui");
+        guilayer.drawPriority = 10;
+        AddLayer(guilayer);
     }
 
     public void update(double timescale) {
@@ -43,12 +52,19 @@ public class World {
             isUpdating = true;
             // unmodifiable list used in case an entity is deleted in the middle of an update() loop
             var cambb = camera.getBB();
-            for (Entity e : entities) {
-                if (e.updateEnabled && (e.updateOffscreen || e.onScreen)) {
-                    e.update(timescale * globalTimescale);
-                }
-                if (Console.getConVar("ent_culling").getBoolean() && e.removeOffscreen && cambb.boxIsLeftOf(e.boundingBox, e.position, camera.position)) {
-                    RemoveEntity(e);
+            for (String layername : layerOrder) {
+                var layer = GetLayer(layername);
+                layer.CleanEntities();
+                if (layer.updateEnabled) {
+                    Entity[] ents = layer.entities.toArray(new Entity[0]);
+                    for (Entity e : ents) {
+                        if (e.updateEnabled && (e.updateOffscreen || e.onScreen)) {
+                            e.update(timescale * globalTimescale);
+                        }
+                        if (Console.getConVar("ent_culling").getBoolean() && e.removeOffscreen && cambb.boxIsLeftOf(e.boundingBox, e.position, camera.position)) {
+                            RemoveEntity(e);
+                        }
+                    }
                 }
             }
             isUpdating = false;
@@ -78,54 +94,62 @@ public class World {
     public void draw(double timescale, PGraphics g) {
         renderedEnts = 0;
         var doCulling = Console.getConVar("ent_culling").getBoolean();
-        for (Entity e : entities) {
-            if ((!doCulling || e.renderingOffscreen || EntOnscreen(e)) && e.renderingEnabled) {
-                DrawEntity(e, timescale * globalTimescale, g);
-                renderedEnts++;
+        for (String layername : layerOrder) {
+            var layer = GetLayer(layername);
+            if (layer.drawEnabled) {
+                for (Entity e : layer.entities) {
+                    if ((!doCulling || e.renderingOffscreen || EntOnscreen(e)) && e.renderingEnabled) {
+                        DrawEntity(e, timescale * globalTimescale, g);
+                        renderedEnts++;
+                    }
+                }
             }
         }
     }
 
     public Entity AddEntity(Entity ent, String layer) {
-        if (isUpdating) {
-            pendingAdd.add(ent);
-            return ent;
-        }
-        if (ent.world != null) {
-            ent.world.RemoveEntity(ent);
-        }
-        ent.world = this;
-        if (ent.related != null) {
-            entities.add(entities.indexOf(ent.related)-1, ent);
+        // oh yeah we doin this
+        EntityLayer l = GetLayer(layer);
+        if (l != null) {
+            l.AddEntity(ent);
+            ent.world = this;
         } else {
-            entities.add(ent);
+            System.out.println("Nonfatal: " + ent.getClass().getSimpleName() + " attempted add to nonexistent layer " + layer);
         }
-        ent.timeCreated = time;
-
         return ent;
+    }
+
+    public Entity AddEntity(Entity ent) {
+        return AddEntity(ent, "default");
     }
 
     public void AddEntitySort(Entity ent) {
         AddEntity(ent);
-        queueSort = true;
+        //queueSort = true;
     }
 
     public void RemoveEntity(Entity ent) {
-        if (isUpdating) {
-            ent.queueRemove = true;
-        } else {
-            ent.world = null;
-            entities.remove(ent);
-        }
-
+        ent.layer.RemoveEntity(ent);
     }
 
     public void AddLayer(EntityLayer layer) {
         layers.put(layer.name, layer);
+        UpdateLayers();
     }
 
     public EntityLayer GetLayer(String layerName) {
         return layers.get(layerName);
+    }
+
+    public void UpdateLayers() {
+        var list = layers.values();
+        var sorted = list.stream().sorted(Comparator.comparingInt(o -> o.drawPriority));
+        layerOrder = new String[layers.size()];
+        int i = 0;
+        for (EntityLayer layer : sorted.toList()) {
+            layerOrder[i] = layer.name;
+            i++;
+        }
     }
 
     public void DrawEntity(Entity entity, double timescale, PGraphics g) {

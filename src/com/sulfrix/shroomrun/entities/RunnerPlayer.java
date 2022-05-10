@@ -45,7 +45,7 @@ public class RunnerPlayer extends Actor {
     public void gib() {
         Random rand = new Random();
         PVector pos = new PVector(position.x+(rand.nextFloat(30)-15), position.y+(rand.nextFloat(30)-15));
-        world.AddEntity(new ShroomGib(pos));
+        world.AddEntity(new ShroomGib(pos), "util");
     }
 
     public void JumpLogic(double timescale) {

@@ -101,7 +101,6 @@ public class Actor extends PhysicsEntity implements Damageable {
         if (dmgInfo.team != this.team) {
             health -= dmgInfo.damage;
             velocity.add(PVector.mult(dmgInfo.force, kbMult));
-            System.out.println(dmgInfo.force);
             for (int i = 0; i < dmgInfo.damage/3; i++) {
                 gib();
             }

@@ -9,6 +9,7 @@ import com.sulfrix.sulfur.debug.components.BasicText;
 import com.sulfrix.sulfur.debug.components.FPS;
 import com.sulfrix.sulfur.debug.console.commands.HelpCommand;
 import com.sulfrix.sulfur.entity.Entity;
+import com.sulfrix.sulfur.lib.EntityLayer;
 import com.sulfrix.sulfur.lib.GlobalManagers.*;
 import com.sulfrix.sulfur.lib.input.Input;
 import processing.core.PApplet;
@@ -177,15 +178,42 @@ public abstract class SulfurGame extends PApplet {
             if (args.length > 0) {
                 var entName = args[0].toLowerCase();
                 var world = game.currentScenario.world;
-                var entList = world.entities;
-                for (int i = entList.size()-1; i >= 0; i--) {
-                    var ent = entList.get(i);
-                    if (ent.getClass().getSimpleName().toLowerCase().equals(entName)) {
-                        world.RemoveEntity(ent);
+                var layers = world.layers;
+                for (EntityLayer l : layers.values()) {
+                    var entList = l.entities;
+                    for (int i = entList.size()-1; i >= 0; i--) {
+                        var ent = entList.get(i);
+                        if (ent.getClass().getSimpleName().toLowerCase().equals(entName)) {
+                            l.RemoveEntityActual(ent);
+                        }
                     }
                 }
+
             }
         }, "Deletes all entities of a type."));
+        Console.addConCommand(new ConCommand("layer_list", (game, args) -> {
+            System.out.println("Current layers: ");
+            for (EntityLayer l : currentScenario.world.layers.values()) {
+                String attribString = (l.drawEnabled ? "R" : "_") + (l.updateEnabled ? "U" : "_");
+                System.out.println(l.drawPriority + " " + l.name + ": " + l.entities.size() + " entities | " + l.flags.toString());
+            }
+        }, "Lists current layers"));
+        Console.addConCommand(new ConCommand("layer_updtoggle", (game, args) -> {
+            if (args.length > 0) {
+                EntityLayer l = currentScenario.world.GetLayer(args[0]);
+                if (l != null) {
+                    l.updateEnabled = !l.updateEnabled;
+                }
+            }
+        }, "toggles update for specific layer"));
+        Console.addConCommand(new ConCommand("layer_drawtoggle", (game, args) -> {
+            if (args.length > 0) {
+                EntityLayer l = currentScenario.world.GetLayer(args[0]);
+                if (l != null) {
+                    l.drawEnabled = !l.drawEnabled;
+                }
+            }
+        }, "toggles drawing for specific layer"));
         initConVars();
     }
 

@@ -1,6 +1,8 @@
 package com.sulfrix.sulfur.entity;
 
 import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.EntityLayer;
+import com.sulfrix.sulfur.lib.LayerFlag;
 import processing.core.PVector;
 
 import java.util.function.Predicate;
@@ -39,82 +41,88 @@ public abstract class PhysicsEntity extends Entity {
     }
 
     void DoCollision(double timescale) {
-        for (Entity e : world.entities) {
-            if (e != this) {
-                if (e.collisionEnabled && (ignoreCollision == null || !ignoreCollision.test(e))) {
-                    if (velocity.y != 0) {
-                        int vertSign = 1;
-                        if (velocity.y < 0) {
-                            vertSign = -1;
+        for (EntityLayer layer : world.layers.values()) {
+            if (!layer.flags.contains(LayerFlag.NOCOLLIDE)) {
+                Entity[] ents = layer.entities.toArray(new Entity[0]);
+                for (Entity e : ents) {
+                    if (e != this) {
+                        if (e.collisionEnabled && (ignoreCollision == null || !ignoreCollision.test(e))) {
+                            if (velocity.y != 0) {
+                                int vertSign = 1;
+                                if (velocity.y < 0) {
+                                    vertSign = -1;
+                                }
+
+                                BoundingBox bb = new BoundingBox(boundingBox.width / 1.2f, boundingBox.height);
+                                PVector pos = PVector.add(position, new PVector(0, (float) (velocity.y * timescale)));
+
+                                // vertical
+                                if (BoundingBox.touching(bb, pos, e.boundingBox, e.position)) {
+                                    e.collide(this);
+                                    onCollide(e);
+                                    if (bounciness > 0 && Math.abs(velocity.y) > 1) {
+                                        velocity.y *= -bounciness;
+                                    } else {
+                                        velocity.y = 0;
+                                    }
+                                    if (vertSign == 1) {
+                                        collisionSides[2] = true;
+                                        position.y = e.position.y - (e.boundingBox.height / 2 + boundingBox.height / 2);
+                                    } else {
+                                        collisionSides[0] = true;
+                                        position.y = e.position.y + (e.boundingBox.height / 2 + boundingBox.height / 2);
+                                    }
+
+                                } else {
+                                    collisionSides[2] = false;
+                                    collisionSides[0] = false;
+                                }
+
+
+                            }
+                            if (velocity.x != 0) {
+                                int horizSign = 1;
+                                if (velocity.x < 0) {
+                                    horizSign = -1;
+                                }
+
+                                BoundingBox bb = new BoundingBox(boundingBox.width, boundingBox.height / 1.2f);
+                                PVector pos = PVector.add(position, new PVector((float) (velocity.x * timescale), 0));
+
+                                // horizontal
+                                if (BoundingBox.touching(bb, pos, e.boundingBox, e.position)) {
+                                    e.collide(this);
+                                    onCollide(e);
+                                    if (bounciness > 0 && Math.abs(velocity.x) > 0.05) {
+                                        velocity.x *= -bounciness;
+                                    } else {
+                                        velocity.x = 0;
+                                    }
+                                    if (horizSign == 1) {
+                                        collisionSides[1] = true;
+                                        position.x = e.position.x - (e.boundingBox.width / 2 + boundingBox.width / 2);
+                                    } else {
+                                        collisionSides[3] = true;
+                                        position.x = e.position.x + (e.boundingBox.width / 2 + boundingBox.width / 2);
+                                    }
+                                    break;
+                                } else {
+                                    collisionSides[1] = false;
+                                    collisionSides[3] = false;
+                                }
+                            }
+                        } else if (e.isTrigger) {
+                            if (BoundingBox.touching(boundingBox, position, e.boundingBox, e.position)) {
+                                e.collide(this);
+                                onCollide(e);
+                            }
                         }
 
-                        BoundingBox bb = new BoundingBox(boundingBox.width / 1.2f, boundingBox.height);
-                        PVector pos = PVector.add(position, new PVector(0, (float) (velocity.y * timescale)));
-
-                        // vertical
-                        if (BoundingBox.touching(bb, pos, e.boundingBox, e.position)) {
-                            e.collide(this);
-                            onCollide(e);
-                            if (bounciness > 0 && Math.abs(velocity.y) > 1) {
-                                velocity.y *= -bounciness;
-                            } else {
-                                velocity.y = 0;
-                            }
-                            if (vertSign == 1) {
-                                collisionSides[2] = true;
-                                position.y = e.position.y - (e.boundingBox.height / 2 + boundingBox.height / 2);
-                            } else {
-                                collisionSides[0] = true;
-                                position.y = e.position.y + (e.boundingBox.height / 2 + boundingBox.height / 2);
-                            }
-
-                        } else {
-                            collisionSides[2] = false;
-                            collisionSides[0] = false;
-                        }
-
-
-                    }
-                    if (velocity.x != 0) {
-                        int horizSign = 1;
-                        if (velocity.x < 0) {
-                            horizSign = -1;
-                        }
-
-                        BoundingBox bb = new BoundingBox(boundingBox.width, boundingBox.height / 1.2f);
-                        PVector pos = PVector.add(position, new PVector((float) (velocity.x * timescale), 0));
-
-                        // horizontal
-                        if (BoundingBox.touching(bb, pos, e.boundingBox, e.position)) {
-                            e.collide(this);
-                            onCollide(e);
-                            if (bounciness > 0 && Math.abs(velocity.x) > 0.05) {
-                                velocity.x *= -bounciness;
-                            } else {
-                                velocity.x = 0;
-                            }
-                            if (horizSign == 1) {
-                                collisionSides[1] = true;
-                                position.x = e.position.x - (e.boundingBox.width / 2 + boundingBox.width / 2);
-                            } else {
-                                collisionSides[3] = true;
-                                position.x = e.position.x + (e.boundingBox.width / 2 + boundingBox.width / 2);
-                            }
-                            break;
-                        } else {
-                            collisionSides[1] = false;
-                            collisionSides[3] = false;
-                        }
-                    }
-                } else if (e.isTrigger) {
-                    if (BoundingBox.touching(boundingBox, position, e.boundingBox, e.position)) {
-                        e.collide(this);
-                        onCollide(e);
                     }
                 }
-
             }
         }
+
     }
 
     protected void onCollide(Entity otherEnt) {}

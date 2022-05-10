@@ -67,7 +67,14 @@ public class TerrainGen extends Entity {
                 }
                 var newTile = new Tile(new PVector((baseX+x)*30, (baseY+y)*30), tex);
                 newTile.ZPos = -2;
-                world.AddEntity(newTile);
+
+                if (!(y == 0 || x == 0 || y == height-1 || x == width-1)) {
+                    newTile.collisionEnabled = false;
+                    //newTile.renderingEnabled = false;
+                    world.AddEntity(newTile, "util");
+                } else {
+                    world.AddEntity(newTile);
+                }
             }
         }
         for (int h = 0; h < hazards; h++) {

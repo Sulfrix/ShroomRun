@@ -13,12 +13,14 @@ public class EntityLayer {
 
     public World world;
 
-    public boolean updateEnabled;
-    public boolean drawEnabled;
+    public boolean updateEnabled = true;
+    public boolean drawEnabled = true;
 
     public EnumSet<LayerFlag> flags;
 
     public int drawPriority;
+
+    public List<Entity> pendingRemove = new LinkedList<>();
 
     public EntityLayer(String name) {
         this.name = name;
@@ -43,8 +45,21 @@ public class EntityLayer {
     }
 
     public Entity RemoveEntity(Entity entity) {
+        pendingRemove.add(entity);
+        return entity;
+    }
+
+    public Entity RemoveEntityActual(Entity entity) {
         entities.remove(entity);
         entity.layer = null;
+        entity.world = null;
         return entity;
+    }
+
+    public void CleanEntities() {
+        var ents = pendingRemove.toArray(new Entity[0]);
+        for (Entity e : ents) {
+            RemoveEntityActual(e);
+        }
     }
 }

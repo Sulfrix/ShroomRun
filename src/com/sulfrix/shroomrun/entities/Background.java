@@ -34,7 +34,7 @@ public class Background extends Entity {
     }
 
     public void genTile() {
-        world.AddEntitySort(new BackgroundTile(new PVector(genPos*depth, (depth-2)*-100), depth, new PVector(genPos, 0)));
+        world.AddEntity(new BackgroundTile(new PVector(genPos*depth, (depth-2)*-100), depth, new PVector(genPos, 0)), this.layer.name);
         genPos+=BackgroundTile.tileWidth;
     }
 

@@ -3,6 +3,7 @@ package com.sulfrix.shroomrun.entities.ui;
 import com.sulfrix.sulfur.entity.Entity;
 import com.sulfrix.shroomrun.entities.RunnerPlayer;
 import com.sulfrix.sulfur.lib.BoundingBox;
+import com.sulfrix.sulfur.lib.EntityLayer;
 import com.sulfrix.sulfur.lib.GlobalManagers.Display;
 import com.sulfrix.sulfur.lib.GlobalManagers.FontManager;
 import com.sulfrix.sulfur.lib.RenderPosType;
@@ -64,9 +65,11 @@ public class HUDEntity extends Entity {
     }
 
     public RunnerPlayer findPlayer() {
-        for (Entity e : world.entities) {
-            if (e instanceof RunnerPlayer) {
-                return (RunnerPlayer) e;
+        for (EntityLayer layer : world.layers.values()) {
+            for (Entity e : layer.entities) {
+                if (e instanceof RunnerPlayer) {
+                    return (RunnerPlayer) e;
+                }
             }
         }
         return null;
