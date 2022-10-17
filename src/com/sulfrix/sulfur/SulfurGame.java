@@ -19,10 +19,12 @@ import processing.opengl.PGraphicsOpenGL;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public abstract class SulfurGame extends PApplet {
 
     public static boolean isAndroid = false;
+
 
     public boolean debugText = false;
     public boolean frameGraph = false;
@@ -46,6 +48,8 @@ public abstract class SulfurGame extends PApplet {
     public Console console;
 
     public ArrayList<String> packages = new ArrayList<>();
+
+    public Consumer<SulfurGame> postDraw;
 
     public SulfurGame(DisplayMode displayMode, Scenario startingScenario) {
         this.displayMode = displayMode;
@@ -114,6 +118,9 @@ public abstract class SulfurGame extends PApplet {
         Console.addConCommand(new ConCommand("unpause", (game, args) -> {
             game.paused = false;
         }, "Unpauses the game"));
+        Console.addConCommand(new ConCommand("echo", (game, args) -> {
+
+        }, "writes to console"));
         Console.addConCommand(new ConCommand("console_help", (game, args) -> {
             System.out.println("Console tips:");
             System.out.println("Ctrl+D to clear input box");
@@ -332,6 +339,9 @@ public abstract class SulfurGame extends PApplet {
             translate(0, -height*(1-consoleAnim));
             console.draw(g);
             pop();
+        }
+        if (postDraw != null) {
+            postDraw.accept(this);
         }
         TimeManager.sync();
         if (frameGraph) {

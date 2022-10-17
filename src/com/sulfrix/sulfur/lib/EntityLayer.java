@@ -57,9 +57,11 @@ public class EntityLayer {
     }
 
     public void CleanEntities() {
-        var ents = pendingRemove.toArray(new Entity[0]);
-        for (Entity e : ents) {
-            RemoveEntityActual(e);
+        if (pendingRemove.size() > 0) {
+            var ents = pendingRemove.toArray(new Entity[0]);
+            for (Entity e : ents) {
+                RemoveEntityActual(e);
+            }
         }
     }
 }
