@@ -53,6 +53,7 @@ public class EntityLayer {
         entities.remove(entity);
         entity.layer = null;
         entity.world = null;
+
         return entity;
     }
 
@@ -62,6 +63,7 @@ public class EntityLayer {
             for (Entity e : ents) {
                 RemoveEntityActual(e);
             }
+            pendingRemove.clear();
         }
     }
 }
