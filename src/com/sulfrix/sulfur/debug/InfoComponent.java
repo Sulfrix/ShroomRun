@@ -6,25 +6,28 @@ import processing.core.PGraphics;
 
 public abstract class InfoComponent {
 
-    public boolean expandedOnly = true;
+    public boolean expandedOnly;
     public boolean clearOnScenario = false;
     public static final float FONT_SIZE = 10;
+
+    public static final float EXPANDED_FONT_SIZE = 20;
     public static final String FONT_NAME = "Arial";
 
     public InfoComponent(boolean expandedOnly) {
         this.expandedOnly = expandedOnly;
     }
 
-    public abstract float draw(PGraphics g, SulfurGame game);
+    public abstract float draw(PGraphics g, SulfurGame game, boolean exp);
 
-    public float basicDrawText(PGraphics g, String text) {
+    public float basicDrawText(PGraphics g, String text, boolean exp) {
         g.push();
         g.fill(0);
-        g.textSize(FONT_SIZE);
-        g.textFont(FontManager.useFont(FONT_NAME, FONT_SIZE));
+        var fsize = exp ? EXPANDED_FONT_SIZE : FONT_SIZE;
+        g.textSize(fsize);
+        g.textFont(FontManager.useFont(FONT_NAME, fsize));
         var size = g.textAscent();
         g.text(text, 0, 0);
         g.pop();
-        return FONT_SIZE;
+        return size;
     }
 }

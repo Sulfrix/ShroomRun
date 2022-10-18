@@ -44,9 +44,9 @@ public class Enemy extends Actor {
         }
         if (collisionSides[2]) {
             if (velocity.x > 0) {
-                velocity.x -= timescale/4f;
+                velocity.x -= timescale/3f;
             } else if (velocity.x < 0) {
-                velocity.x += timescale/4f;
+                velocity.x += timescale/3f;
             }
         }
     }

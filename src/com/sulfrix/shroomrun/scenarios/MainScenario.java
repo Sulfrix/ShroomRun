@@ -5,6 +5,7 @@ import com.sulfrix.shroomrun.entities.entityTypes.DamageTeam;
 import com.sulfrix.sulfur.Scenario;
 import com.sulfrix.shroomrun.entities.*;
 import com.sulfrix.shroomrun.entities.ui.HUDEntity;
+import com.sulfrix.sulfur.debug.console.Console;
 import com.sulfrix.sulfur.entity.Camera;
 import com.sulfrix.sulfur.lib.EntityLayer;
 import com.sulfrix.sulfur.lib.GlobalManagers.Display;
@@ -21,6 +22,11 @@ public class MainScenario extends Scenario {
     public TerrainGen terrainGen;
     public ScoreManager score;
     public boolean gameOver = false;
+    public boolean isHighscore = false;
+
+    public int highscore = 0;
+
+    public float textAnim = 0;
 
     public MainScenario() {
     }
@@ -64,6 +70,13 @@ public class MainScenario extends Scenario {
         world.AddEntity(hud, "gui");
         score = new ScoreManager(player);
         world.AddEntity(score, "nodraw");
+        var overLayer = new EntityLayer("over");
+        overLayer.drawPriority = 1;
+        world.AddLayer(overLayer);
+        var highscore = Console.getConVar("shroom_highscore").getInt();
+        if (highscore > 0) {
+            world.AddEntity(new HighscoreIndicator(new PVector(highscore*30, 0)));
+        }
     }
 
     @Override
@@ -80,6 +93,11 @@ public class MainScenario extends Scenario {
             if (player.getHealth() <= 0 && !gameOver) {
                 score.setScore();
                 gameOver = true;
+                highscore = Console.getConVar("shroom_highscore").getInt();
+                if ((int)score.getScore() > highscore) {
+                    Console.runCommand("shroom_highscore " + (int)score.getScore(), false);
+                    isHighscore = true;
+                }
                 camera.focus = null;
 
             }
@@ -120,6 +138,23 @@ public class MainScenario extends Scenario {
                 g.textSize(30);
                 g.textAlign(PConstants.CENTER, PConstants.TOP);
                 g.text((int)score.getScore(), 0, 0);
+                g.pop();
+            }
+            if (!isHighscore) {
+                g.push();
+                g.translate(0, 80);
+                FontManager.quickUse(g, "Arial", 20f*scale);
+                g.textSize(20);
+                g.text("High score: " + highscore, 0, 0);
+                g.pop();
+            } else {
+                g.push();
+                textAnim += timescale*0.2;
+                g.translate(0, 80);
+                FontManager.quickUse(g, "Arial", 20f*scale);
+                g.textSize(20);
+                g.fill(255, 127+Math.abs((float)Math.sin(textAnim))*127);
+                g.text("New high score!", 0, 0);
                 g.pop();
             }
             g.pop();

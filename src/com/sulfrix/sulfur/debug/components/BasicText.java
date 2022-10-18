@@ -14,8 +14,8 @@ public class BasicText extends InfoComponent {
     }
 
     @Override
-    public float draw(PGraphics g, SulfurGame game) {
-        return basicDrawText(g, textLambda.eval(game));
+    public float draw(PGraphics g, SulfurGame game, boolean exp) {
+        return basicDrawText(g, textLambda.eval(game), exp);
     }
 
     public interface BasicTextLambda {

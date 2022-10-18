@@ -108,10 +108,10 @@ public class Actor extends PhysicsEntity implements Damageable {
                 velocity.x = 0;
                 System.out.println("x negated");
             } else {
-                velocity.y -= kbUp;
+                velocity.y -= dmgInfo.force.mag()/4f;
             }
             if (dmgInfo.force.mag() > 2) {
-                stun(10);
+                stun(dmgInfo.damage/5f);
             }
             return true;
         }

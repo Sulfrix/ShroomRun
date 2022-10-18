@@ -2,6 +2,7 @@ package com.sulfrix.shroomrun.entities;
 
 import com.sulfrix.shroomrun.entities.item.Item;
 import com.sulfrix.shroomrun.entities.item.TestItem;
+import com.sulfrix.shroomrun.entities.item.TestShotgun;
 import com.sulfrix.sulfur.debug.console.Console;
 import com.sulfrix.sulfur.lib.BoundingBox;
 import com.sulfrix.sulfur.lib.animation.AnimatedSprite;
@@ -25,7 +26,7 @@ public class RunnerPlayer extends Actor {
         sprite.addSequence("standing", 0, new int[] {1}, false);
         sprite.addSequence("jump", 0.25f, new int[] {0}, false);
         sprite.addSequence("fall", 0.35f, new int[] {0}, false);
-        equip(new TestItem(position.copy()));
+        equip(new TestShotgun(position.copy()));
     }
 
     @Override

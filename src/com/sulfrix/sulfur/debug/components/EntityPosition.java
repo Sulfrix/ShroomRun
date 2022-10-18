@@ -18,13 +18,13 @@ public class EntityPosition extends InfoComponent {
     }
 
     @Override
-    public float draw(PGraphics g, SulfurGame game) {
+    public float draw(PGraphics g, SulfurGame game, boolean exp) {
         if (trackedEntity != null) {
             var pos = trackedEntity.position;
             String vecStr = "[" + String.format("%.1f", pos.x)+", "+String.format("%.1f", pos.y) + "]";
-            return basicDrawText(g, name + " Position: " + vecStr);
+            return basicDrawText(g, name + " Position: " + vecStr, exp);
         } else {
-            return basicDrawText(g, name + " NOT FOUND");
+            return basicDrawText(g, name + " NOT FOUND", exp);
         }
 
     }

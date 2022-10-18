@@ -12,7 +12,7 @@ public class FPS extends InfoComponent {
     }
 
     @Override
-    public float draw(PGraphics g, SulfurGame game) {
-        return basicDrawText(g, "FPS: " + (int)(1d/(TimeManager.avgFrameTime/1000d)));
+    public float draw(PGraphics g, SulfurGame game, boolean exp) {
+        return basicDrawText(g, "FPS: " + (int)(1d/(TimeManager.avgFrameTime/1000d)), exp);
     }
 }

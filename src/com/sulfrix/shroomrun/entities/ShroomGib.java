@@ -42,6 +42,9 @@ public class ShroomGib extends PhysicsEntity {
     @Override
     public void update(double timescale) {
         super.update(timescale);
+        if (position.y > 2000) {
+            remove();
+        }
         if (collisionSides[2]) {
             sprite = atlas.images[3];
             updateEnabled = false;

@@ -35,6 +35,6 @@ public class ShroomRun extends SulfurGame {
     public void initConVars() {
         Console.addConVar(new ConVar("shroom_movespeed", "10", "double", "The speed at which the shroom runs."));
         Console.addConVar(new ConVar("shroom_spikelimit", "1", "int", "The max amount of spikes which can generate on a ground tile"));
-        Console.addConVar(new ConVar("shroom_highscore", "0", "int", "Saved highscore. Yes, you can modify it.").save());
+        Console.addConVar(new ConVar("shroom_highscore", "0", "int", "Saved highscore. Yes, you can modify it. Yes, that would be cheating.").save());
     }
 }

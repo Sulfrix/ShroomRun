@@ -20,7 +20,7 @@ public class DebugInfo implements PConstants {
         g.translate(g.width, 0);
         for (InfoComponent c : components) {
             if (expanded || !c.expandedOnly) {
-                g.translate(0, c.draw(g, game));
+                g.translate(0, c.draw(g, game, expanded));
             }
         }
         g.pop();

@@ -84,7 +84,8 @@ public abstract class SulfurGame extends PApplet {
         Console.addConVar(new ConVar("console_fontsize", "10", "int", "Console font size.").save());
         Console.addConVar(new ConVar("fps_max", "300", "int", "Maximum FPS.").save());
         Console.addConVar(new ConVar("fullscreen", "0", "boolean", "Enables fullscreen. Applies at launch, saving is required.").save());
-        Console.addConVar(new ConVar("ent_culling", "1", "boolean", "Deletes tiles when offscreen."));
+        Console.addConVar(new ConVar("ent_culling", "1", "boolean", "Hides entities when offscreen"));
+        Console.addConVar(new ConVar("ent_leftdelete", "1", "boolean", "Deletes tiles when offscreen."));
         Console.addConVar(new ConVar("rng_setseed", "0", "int", "When != 0, sets the seed for RNG to use."));
         Console.addConVar(new ConVar("cam_forcescale", "0", "float", "Forces the camera to scale to this value. (when nonzero)"));
         Console.addConVar(new ConVar("cam_debugscale", "1", "float", "Scales everything, shows outside camera bounds."));
@@ -274,6 +275,15 @@ public abstract class SulfurGame extends PApplet {
         debugInfo = new DebugInfo();
         debugInfo.components.add(new FPS());
         debugInfo.components.add(new BasicText((game) -> "Last Key: " + Integer.toString(game.input.lastKey), true));
+        debugInfo.components.add(new BasicText((game) -> {
+            var acc = 0;
+            var onscreenAcc = 0;
+            for (EntityLayer layer : game.currentScenario.world.layers.values()) {
+                acc += layer.entities.size();
+                onscreenAcc += layer.entities.stream().filter((entity -> entity.onScreen)).count();
+            }
+            return "Entities: " + Integer.toString(onscreenAcc) + "/" + Integer.toString(acc);
+        }, true));
         setCurrentScenario(startingScenario);
         gameSetup();
     }

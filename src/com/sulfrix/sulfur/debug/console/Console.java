@@ -7,10 +7,7 @@ import processing.core.PGraphics;
 import processing.event.KeyEvent;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +26,8 @@ public class Console {
     public int caret;
     public ArrayList<String> commandHistory = new ArrayList<>();
     public int historyIndex;
+
+    public List<String> cacheMatches;
 
     // wow that looks ugly in here
     public static Pattern commandPattern = Pattern.compile("(((?<!\\\\)\"(.*?)(?<!\\\\)\")|(\\S+))");
@@ -82,6 +81,24 @@ public class Console {
             default -> {
             }
         }
+        refreshCompletion();
+        if (event.getKeyCode() == 9) {
+            if (cacheMatches != null) {
+                if (cacheMatches.size() > 0) {
+                    inputbuffer = new StringBuilder(cacheMatches.get(0));
+                    caret = inputbuffer.length();
+                    cacheMatches = null;
+                }
+            }
+        }
+    }
+
+    public void refreshCompletion() {
+        if (inputbuffer.length() > 0) {
+            cacheMatches = closestMatch(inputbuffer.substring(0, caret));
+        } else {
+            cacheMatches = null;
+        }
     }
 
     public void setCaret(int index) {
@@ -108,6 +125,7 @@ public class Console {
         var hist = commandHistory.get(historyIndex);
         inputbuffer = new StringBuilder(hist);
         caret = inputbuffer.length();
+        refreshCompletion();
     }
 
     public String clearInput() {
@@ -116,6 +134,21 @@ public class Console {
         historyIndex = commandHistory.size();
         inputbuffer = new StringBuilder();
         return out;
+    }
+
+    public List<String> closestMatch(String input) {
+        ArrayList<String> matches = new ArrayList<>();
+        for (String cmd : concommands.keySet()) {
+            if (cmd.startsWith(input)) {
+                matches.add(cmd);
+            }
+        }
+        for (String cmd : convars.keySet()) {
+            if (cmd.startsWith(input)) {
+                matches.add(cmd);
+            }
+        }
+        return matches;
     }
 
     public static boolean runCommand(String command, boolean isUser) {
@@ -155,6 +188,7 @@ public class Console {
         if (!name.endsWith(".cfg")) {
             name+= ".cfg";
         }
+        System.out.println("Attempting to save " + name);
         FileWriter fileWriter = new FileWriter("cfg/" + name);
         PrintWriter printWriter = new PrintWriter(fileWriter);
         for (String k : convars.keySet()) {
@@ -166,6 +200,7 @@ public class Console {
             }
         }
         printWriter.close();
+        System.out.println("Saving finished");
     }
 
     public static void loadFromFile(String name) throws IOException {
@@ -268,6 +303,14 @@ public class Console {
                 g.pop();
                 g.translate(-(caretPos - (g.width - 50)), 0);
             }
+            g.push();
+            g.fill(255, 127);
+            if (cacheMatches != null) {
+                if (cacheMatches.size() > 0) {
+                    g.text(cacheMatches.get(0), 0, 0);
+                }
+            }
+            g.pop();
             g.text(inputbuffer.toString(), 0, 0);
             g.rect(caretPos, -drawFontSize, 1, drawFontSize + g.textDescent());
             g.pop();

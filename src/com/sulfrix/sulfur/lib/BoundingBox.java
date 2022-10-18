@@ -28,9 +28,8 @@ public class BoundingBox {
         PVector maxs2 = b2.getMaxs(p2);
 
 
-        boolean out = ((mins1.x < maxs2.x && maxs1.x > mins2.x) && (mins1.y < maxs2.y && maxs1.y > mins2.y));
+        return ((mins1.x < maxs2.x && maxs1.x > mins2.x) && (mins1.y < maxs2.y && maxs1.y > mins2.y));
 
-        return out;
     }
 
     public static BoundingBox zero() {
@@ -69,5 +68,17 @@ public class BoundingBox {
         float xmax = (pos.x + offset.x) + width / 2;
         float ymax = (pos.y + offset.y) + height / 2;
         return new PVector(xmax, ymax);
+    }
+
+    public BoundingBox copy() {
+        var out = new BoundingBox(width, height);
+        out.offset = this.offset;
+        return out;
+    }
+
+    public BoundingBox scale(float mult) {
+        width *= mult;
+        height *= mult;
+        return this;
     }
 }

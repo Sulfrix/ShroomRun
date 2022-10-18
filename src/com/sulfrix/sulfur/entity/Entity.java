@@ -14,7 +14,7 @@ public abstract class Entity {
     public PVector velocity = new PVector(0, 0);
     public float ZPos = 0;
     public BoundingBox boundingBox;
-    public RenderPosType renderPosType = RenderPosType.WORLD_SPACE;
+    public RenderPosType renderPosType = RenderPosType.LOCAL_SPACE;
     public boolean onScreen = true;
     public UUID uuid;
     public double timeCreated = 0;
